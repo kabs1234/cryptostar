@@ -1,1 +1,1 @@
-console.log('Привет, мир!');
+import './users-list.js';
