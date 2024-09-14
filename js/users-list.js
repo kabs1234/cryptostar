@@ -3,6 +3,7 @@ import { getRandomNumber, getRandomElement } from './utils.js';
 
 const contractorsListTable = document.querySelector('.users-list__table-body');
 const tabControlButtons = document.querySelectorAll('.tabs__control');
+const isVerifiedCheckbox = document.querySelector('#checked-users');
 const userName = document.querySelector('.user-profile__name span');
 const userCryptoBalance = document.querySelector('#user-crypto-balance');
 const userCurrencyBalance = document.querySelector('#user-fiat-balance');
@@ -14,6 +15,7 @@ const mapViewButton = tabControlButtons[3];
 
 let buyersList;
 let sellersList;
+let currentRenderedList;
 
 const getContractorsData = async () => {
   const contractorsData = await fetch('https://cryptostar.grading.htmlacademy.pro/contractors');
@@ -74,14 +76,14 @@ const renderContractor = (contractor) => {
   return parsedStringElement.querySelector('tr');
 };
 
-const contractorsUsersListTable = () => {
+const clearContractorsTable = () => {
   contractorsListTable.innerHTML = '';
 };
 
-const renderList = (usersList) => {
-  contractorsUsersListTable();
+const renderContractorsList = (contractorsList) => {
+  clearContractorsTable();
 
-  usersList.forEach((value) => {
+  contractorsList.forEach((value) => {
     const renderedUser = renderContractor(value);
     contractorsListTable.append(renderedUser);
   });
@@ -95,18 +97,32 @@ const addIsActiveClass = (element) => {
   element.classList.add('is-active');
 };
 
+const renderOnlyVerifiedUsers = () => {
+  if (isVerifiedCheckbox.checked) {
+    const onlyVerifiedContractors = [...currentRenderedList].filter((element) => element.isVerified);
+
+    renderContractorsList(onlyVerifiedContractors);
+  } else {
+    renderContractorsList([...currentRenderedList]);
+  }
+};
 
 buyListControlButton.addEventListener('click', () => {
   removeIsActiveClass(sellListControlButton);
   addIsActiveClass(buyListControlButton);
-  renderList(buyersList);
+  currentRenderedList = [...buyersList];
+  renderOnlyVerifiedUsers();
+
 });
 
 sellListControlButton.addEventListener('click', () => {
   removeIsActiveClass(buyListControlButton);
   addIsActiveClass(sellListControlButton);
-  renderList(sellersList);
+  currentRenderedList = [...sellersList];
+  renderOnlyVerifiedUsers();
 });
+
+isVerifiedCheckbox.addEventListener('change', renderOnlyVerifiedUsers);
 
 getContractorsData().then((usersData) => {
   const copyUsersData = [...usersData];
@@ -114,7 +130,8 @@ getContractorsData().then((usersData) => {
   buyersList = copyUsersData.filter((element) => element.status === 'buyer');
   sellersList = copyUsersData.filter((element) => element.status === 'seller');
 
-  renderList(buyersList);
+  renderContractorsList(buyersList);
+  currentRenderedList = [...buyersList];
 });
 
 getUserProfile().then((userProfileData) => {
