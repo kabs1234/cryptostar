@@ -1,8 +1,11 @@
 import { PAYMENT_METHODS } from './constants.js';
 import { getRandomNumber, getRandomElement } from './utils.js';
 
-const usersListTable = document.querySelector('.users-list__table-body');
+const contractorsListTable = document.querySelector('.users-list__table-body');
 const tabControlButtons = document.querySelectorAll('.tabs__control');
+const userName = document.querySelector('.user-profile__name span');
+const userCryptoBalance = document.querySelector('#user-crypto-balance');
+const userCurrencyBalance = document.querySelector('#user-fiat-balance');
 
 const buyListControlButton = tabControlButtons[0];
 const sellListControlButton = tabControlButtons[1];
@@ -12,9 +15,14 @@ const mapViewButton = tabControlButtons[3];
 let buyersList;
 let sellersList;
 
-const getUsersList = async () => {
-  const usersList = await fetch('https://cryptostar.grading.htmlacademy.pro/contractors');
-  return usersList.json();
+const getContractorsData = async () => {
+  const contractorsData = await fetch('https://cryptostar.grading.htmlacademy.pro/contractors');
+  return contractorsData.json();
+};
+
+const getUserProfile = async () => {
+  const userProfile = await fetch('https://cryptostar.grading.htmlacademy.pro/user');
+  return userProfile.json();
 };
 
 const generatePaymentMethods = () => {
@@ -39,18 +47,18 @@ const createPaymentMethodsList = () => {
   return `<ul class="users-list__badges-list">${paymentMethodsStrings.join('\n')}</ul>`;
 };
 
-const renderUser = (user) => {
+const renderContractor = (contractor) => {
   const domParser = new DOMParser();
-  const userRow = `
+  const contractorRow = `
     <table>
       <tr class="users-list__table-row">
         <td class="users-list__table-cell users-list__table-name">
-          ${user.isVerified ? '<svg width="20" height="20" aria-hidden="true"><use xlink:href="#icon-star"></use></svg>' : ''}
-          <span>${user.userName}</span>
+          ${contractor.isVerified ? '<svg width="20" height="20" aria-hidden="true"><use xlink:href="#icon-star"></use></svg>' : ''}
+          <span>${contractor.userName}</span>
         </td>
         <td class="users-list__table-cell users-list__table-currency">keks</td>
-        <td class="users-list__table-cell users-list__table-exchangerate">${user.exchangeRate}₽</td>
-        <td class="users-list__table-cell users-list__table-cashlimit">${user.minAmount}₽</td>
+        <td class="users-list__table-cell users-list__table-exchangerate">${contractor.exchangeRate}₽</td>
+        <td class="users-list__table-cell users-list__table-cashlimit">${contractor.minAmount}₽</td>
         <td class="users-list__table-cell users-list__table-payments">
           ${createPaymentMethodsList()}
         </td>
@@ -61,21 +69,21 @@ const renderUser = (user) => {
     </table>
   `;
 
-  const parsedStringElement = domParser.parseFromString(userRow, 'text/html');
+  const parsedStringElement = domParser.parseFromString(contractorRow, 'text/html');
 
   return parsedStringElement.querySelector('tr');
 };
 
-const clearUsersListTable = () => {
-  usersListTable.innerHTML = '';
+const contractorsUsersListTable = () => {
+  contractorsListTable.innerHTML = '';
 };
 
 const renderList = (usersList) => {
-  clearUsersListTable();
+  contractorsUsersListTable();
 
   usersList.forEach((value) => {
-    const renderedUser = renderUser(value);
-    usersListTable.append(renderedUser);
+    const renderedUser = renderContractor(value);
+    contractorsListTable.append(renderedUser);
   });
 };
 
@@ -86,15 +94,6 @@ const removeIsActiveClass = (element) => {
 const addIsActiveClass = (element) => {
   element.classList.add('is-active');
 };
-
-getUsersList().then((usersData) => {
-  const copyUsersData = [...usersData];
-
-  buyersList = copyUsersData.filter((element) => element.status === 'buyer');
-  sellersList = copyUsersData.filter((element) => element.status === 'seller');
-
-  renderList(buyersList);
-});
 
 
 buyListControlButton.addEventListener('click', () => {
@@ -107,4 +106,19 @@ sellListControlButton.addEventListener('click', () => {
   removeIsActiveClass(buyListControlButton);
   addIsActiveClass(sellListControlButton);
   renderList(sellersList);
+});
+
+getContractorsData().then((usersData) => {
+  const copyUsersData = [...usersData];
+
+  buyersList = copyUsersData.filter((element) => element.status === 'buyer');
+  sellersList = copyUsersData.filter((element) => element.status === 'seller');
+
+  renderList(buyersList);
+});
+
+getUserProfile().then((userProfileData) => {
+  userName.textContent = userProfileData.userName;
+  userCryptoBalance.textContent = userProfileData.balances[1].amount;
+  userCurrencyBalance.textContent = userProfileData.balances[0].amount;
 });
