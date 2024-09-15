@@ -1,7 +1,9 @@
-import { PAYMENT_METHODS } from './constants.js';
-import { getRandomNumber, getRandomElement } from './utils.js';
+import { initiateMap } from './users-map.js';
+import { createPaymentMethodsList } from './utils.js';
 
-const contractorsListTable = document.querySelector('.users-list__table-body');
+const contractorsContainer = document.querySelector('.users-list');
+const contractorsListTable = contractorsContainer.querySelector('.users-list__table-body');
+const mapContainer = document.querySelector('.map').parentElement;
 const tabControlButtons = document.querySelectorAll('.tabs__control');
 const isVerifiedCheckbox = document.querySelector('#checked-users');
 const userName = document.querySelector('.user-profile__name span');
@@ -10,8 +12,8 @@ const userCurrencyBalance = document.querySelector('#user-fiat-balance');
 
 const buyListControlButton = tabControlButtons[0];
 const sellListControlButton = tabControlButtons[1];
-const listViewButton = tabControlButtons[2];
-const mapViewButton = tabControlButtons[3];
+const viewContractorsByListButton = tabControlButtons[2];
+const viewContractorsByMapButton = tabControlButtons[3];
 
 let buyersList;
 let sellersList;
@@ -27,29 +29,11 @@ const getUserProfile = async () => {
   return userProfile.json();
 };
 
-const generatePaymentMethods = () => {
-  const paymentMethodsQuantity = getRandomNumber(1, PAYMENT_METHODS.length);
-  const paymentMethodsCopy = [...PAYMENT_METHODS];
-  const paymentMethodsArray = [];
-
-  for (let i = 0; i < paymentMethodsQuantity; i++) {
-    const randomPaymentMethod = getRandomElement(paymentMethodsCopy);
-    const selectedPaymentMethodIndex = paymentMethodsCopy.indexOf(randomPaymentMethod);
-
-    paymentMethodsArray.push(randomPaymentMethod);
-    paymentMethodsCopy.splice(selectedPaymentMethodIndex, 1);
-  }
-
-  return paymentMethodsArray;
+const clearContractorsTable = () => {
+  contractorsListTable.innerHTML = '';
 };
 
-const createPaymentMethodsList = () => {
-  const paymentMethodsStrings = generatePaymentMethods().map((element) => `<li class="users-list__badges-item badge">${element}</li>`);
-
-  return `<ul class="users-list__badges-list">${paymentMethodsStrings.join('\n')}</ul>`;
-};
-
-const renderContractor = (contractor) => {
+export const renderContractorTableRow = (contractor) => {
   const domParser = new DOMParser();
   const contractorRow = `
     <table>
@@ -60,9 +44,9 @@ const renderContractor = (contractor) => {
         </td>
         <td class="users-list__table-cell users-list__table-currency">keks</td>
         <td class="users-list__table-cell users-list__table-exchangerate">${contractor.exchangeRate}₽</td>
-        <td class="users-list__table-cell users-list__table-cashlimit">${contractor.minAmount}₽</td>
+        <td class="users-list__table-cell users-list__table-cashlimit">${contractor.balance.amount}₽</td>
         <td class="users-list__table-cell users-list__table-payments">
-          ${createPaymentMethodsList()}
+          ${createPaymentMethodsList('users-list__badges-list')}
         </td>
         <td class="users-list__table-cell users-list__table-btn">
           <button class="btn btn--greenborder" type="button">Обменять</button>
@@ -76,15 +60,11 @@ const renderContractor = (contractor) => {
   return parsedStringElement.querySelector('tr');
 };
 
-const clearContractorsTable = () => {
-  contractorsListTable.innerHTML = '';
-};
-
-const renderContractorsList = (contractorsList) => {
+const renderContractorsTableList = (contractorsList) => {
   clearContractorsTable();
 
   contractorsList.forEach((value) => {
-    const renderedUser = renderContractor(value);
+    const renderedUser = renderContractorTableRow(value);
     contractorsListTable.append(renderedUser);
   });
 };
@@ -101,10 +81,24 @@ const renderOnlyVerifiedUsers = () => {
   if (isVerifiedCheckbox.checked) {
     const onlyVerifiedContractors = [...currentRenderedList].filter((element) => element.isVerified);
 
-    renderContractorsList(onlyVerifiedContractors);
+    renderContractorsTableList(onlyVerifiedContractors);
   } else {
-    renderContractorsList([...currentRenderedList]);
+    renderContractorsTableList([...currentRenderedList]);
   }
+};
+
+const hideElement = (element) => {
+  element.style = 'display: none;';
+};
+
+const showMapContainer = () => {
+  hideElement(contractorsContainer);
+  mapContainer.removeAttribute('style');
+};
+
+const showListContainer = () => {
+  hideElement(mapContainer);
+  contractorsContainer.removeAttribute('style');
 };
 
 buyListControlButton.addEventListener('click', () => {
@@ -124,13 +118,27 @@ sellListControlButton.addEventListener('click', () => {
 
 isVerifiedCheckbox.addEventListener('change', renderOnlyVerifiedUsers);
 
+viewContractorsByListButton.addEventListener('click', () => {
+  removeIsActiveClass(viewContractorsByMapButton);
+  addIsActiveClass(viewContractorsByListButton);
+  showListContainer();
+});
+
+viewContractorsByMapButton.addEventListener('click', () => {
+  removeIsActiveClass(viewContractorsByListButton);
+  addIsActiveClass(viewContractorsByMapButton);
+  showMapContainer();
+  initiateMap(sellersList.filter((contractor) => contractor.coords));
+});
+
 getContractorsData().then((usersData) => {
   const copyUsersData = [...usersData];
 
   buyersList = copyUsersData.filter((element) => element.status === 'buyer');
   sellersList = copyUsersData.filter((element) => element.status === 'seller');
 
-  renderContractorsList(buyersList);
+  renderContractorsTableList(buyersList);
+
   currentRenderedList = [...buyersList];
 });
 
