@@ -25,3 +25,11 @@ export const createPaymentMethodsList = (listClass) => {
 
   return `<ul class="${listClass}">${paymentMethodsStrings.join('\n')}</ul>`;
 };
+
+export const hideElement = (element) => {
+  element.style = 'display: none;';
+};
+
+export const removeAttributeFromElement = (element, attribute) => {
+  element.removeAttribute(attribute);
+};

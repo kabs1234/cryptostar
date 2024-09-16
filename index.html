@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="css/style.min.css">
     <link rel="stylesheet" href="./leaflet/leaflet.css">
   </head>
-
   <body>
     <div class="visually-hidden">
       <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -113,7 +112,6 @@
         </symbol>
       </svg>
     </div>
-
     <div class="wrapper">
       <header class="header">
         <div class="container">
@@ -122,12 +120,11 @@
               <use xlink:href="#crypto-stars-logo"></use>
             </svg>
           </span>
-
           <!--
-                        В случае ошибки загрузки данных блок .user-profile нужно скрыть.
-                        Способ подойдёт любой - как полное удаление из DOM,
-                        так и добавление display: none
-                    -->
+            В случае ошибки загрузки данных блок .user-profile нужно скрыть.
+            Способ подойдёт любой - как полное удаление из DOM,
+            так и добавление display: none
+            -->
           <div class="user-profile">
             <ul class="user-profile__cash">
               <li class="user-profile__cash-item">
@@ -162,13 +159,12 @@
       </header>
       <main>
         <h1 class="visually-hidden">Пользователи биржи</h1>
-
         <!--
-                    В случае ошибки загрузки нужно показать .container с сообщением об ошибке
-                    Остальные контейнеры нужно скрыть. Способ сокрытия подойдёт любой.
-                    Для удобства обращения из JS, вы можете добавить контейнерам id
-                    или уникальные классы
-                -->
+          В случае ошибки загрузки нужно показать .container с сообщением об ошибке
+          Остальные контейнеры нужно скрыть. Способ сокрытия подойдёт любой.
+          Для удобства обращения из JS, вы можете добавить контейнерам id
+          или уникальные классы
+          -->
         <div class="container" style="display: none">
           <div class="message">
             <span class="message__icon">
@@ -182,7 +178,6 @@
             </p>
           </div>
         </div>
-
         <div class="container">
           <div class="users-nav">
             <div class="users-nav__tabs">
@@ -196,9 +191,9 @@
             </div>
             <div class="custom-toggle users-nav__custom-toggle">
               <label>
-                <input type="checkbox" id="checked-users" name="checkbox">
-                <span class="custom-toggle__icon"></span>
-                <span class="custom-toggle__label">Только проверенные пользователи</span>
+              <input type="checkbox" id="checked-users" name="checkbox">
+              <span class="custom-toggle__icon"></span>
+              <span class="custom-toggle__label">Только проверенные пользователи</span>
               </label>
             </div>
             <div class="users-nav__tabs">
@@ -211,7 +206,6 @@
               </div>
             </div>
           </div>
-
           <!-- При переключении на карту блок .users-list нужно скрыть. Способ сокрытия подойдёт любой -->
           <div class="users-list">
             <table class="users-list__table tab-item active">
@@ -231,63 +225,62 @@
             </table>
           </div>
         </div>
-
         <!--
-                    При отсутствии данных (если пользователь применил жёсткие фильтры
-                    или сервер вернул пустой массив данных) нужно отобразить данный контейнер.
-                    Справедливо только для отображения типа "Список". В случае с картой
-                    просто показывается пустая карта
-                -->
+          При отсутствии данных (если пользователь применил жёсткие фильтры
+          или сервер вернул пустой массив данных) нужно отобразить данный контейнер.
+          Справедливо только для отображения типа "Список". В случае с картой
+          просто показывается пустая карта
+          -->
         <div class="container container--lightbackground" style="display: none">
-          <div class="message message--noresults"><span class="message__icon">
+          <div class="message message--noresults">
+            <span class="message__icon">
               <svg width="60" height="60" aria-hidden="true">
                 <use xlink:href="#icon-no-results"></use>
-              </svg></span>
+              </svg>
+            </span>
             <p class="message__paragraph">Нет подходящих объявлений</p>
           </div>
         </div>
-
         <!-- При переключении на карту нужно отобразить данный контейнер -->
         <div class="container" style="display: none">
           <div class="map">
             <!--
-                            Карту нужно отрисовать в этот контейнер. Иконки для карты -
-                            img/pin.svg и img/pin-verified.svg для обычных пользователей
-                            и для верифицированных соответственно.
+              Карту нужно отрисовать в этот контейнер. Иконки для карты -
+              img/pin.svg и img/pin-verified.svg для обычных пользователей
+              и для верифицированных соответственно.
 
-                            Контент для балуна вы найдёте в шаблоне #map-baloon__template
-                        -->
+              Контент для балуна вы найдёте в шаблоне #map-baloon__template
+              -->
           </div>
         </div>
       </main>
-
       <footer class="footer">
-        <div class="container"><span class="footer__logo">
+        <div class="container">
+          <span class="footer__logo">
             <svg width="92" height="36" aria-hidden="true">
               <use xlink:href="#crypto-stars-logo"></use>
-            </svg></span>
+            </svg>
+          </span>
           <p class="footer__copyright">Разработано в HTML Academy</p>
         </div>
       </footer>
     </div>
-
     <!--
-            N.B.
-            В разметке мы приводим два отдельных попапа для продажи
-            и для покупки, но по своей сути они отличаются только порядком полей.
-            Поэтому вы можете свести всё к одному попапу и менять порядок при отрисовке
-            в зависимости от типа действия - покупка/продажа.
-            Это более сложный вариант, поэтому трезво оцените свои силы
-        -->
-
+      N.B.
+      В разметке мы приводим два отдельных попапа для продажи
+      и для покупки, но по своей сути они отличаются только порядком полей.
+      Поэтому вы можете свести всё к одному попапу и менять порядок при отрисовке
+      в зависимости от типа действия - покупка/продажа.
+      Это более сложный вариант, поэтому трезво оцените свои силы
+      -->
     <!--
-            При открытии попапа данные нужно заменить на настоящие.
-            Для удобства обращения из JS, вы можете добавить обёрткам id
-            или уникальные классы там, где их нет, а также сами обёрки (используйте <span>)
+      При открытии попапа данные нужно заменить на настоящие.
+      Для удобства обращения из JS, вы можете добавить обёрткам id
+      или уникальные классы там, где их нет, а также сами обёрки (используйте <span>)
 
-            Обратите внимание, что при открытии попапа также нужно убрать скролл с body,
-            для этого можете использовать класс "scroll-lock"
-        -->
+      Обратите внимание, что при открытии попапа также нужно убрать скролл с body,
+      для этого можете использовать класс "scroll-lock"
+      -->
     <div class="modal modal--buy" style="display: none;">
       <div class="modal__wrapper">
         <div class="modal__overlay" data-close-modal></div>
@@ -296,36 +289,40 @@
           <!-- Не забудьте указать верный action-атрибут -->
           <form class="modal-buy" method="post">
             <!--
-                            Обратите внимание, что всем полям для отправки на сервер нужно указать
-                            атрибуты name (их список вы найдёте в техзадании), а часть полей
-                            вообще отправляется скрытыми
-                        -->
+              Обратите внимание, что всем полям для отправки на сервер нужно указать
+              атрибуты name (их список вы найдёте в техзадании), а часть полей
+              вообще отправляется скрытыми
+              -->
             <input type="hidden" name="type" value="BUY">
             <input type="hidden" name="contractorId">
             <input type="hidden" name="exchangeRate">
             <input type="hidden" name="sendingCurrency">
             <input type="hidden" name="receivingCurrency">
-
             <div class="transaction-info">
-              <p class="transaction-info__item transaction-info__item--name"><span
-                  class="transaction-info__label">Пользователь</span><span class="transaction-info__data">
+              <p class="transaction-info__item transaction-info__item--name">
+                <span class="transaction-info__label">Пользователь</span>
+                <span class="transaction-info__data">
                   <svg width="20" height="20" aria-hidden="true">
                     <use xlink:href="#icon-star"></use>
-                  </svg>John Smith</span></p>
-              <p class="transaction-info__item transaction-info__item--exchangerate"><span
-                  class="transaction-info__label">Курс</span><span class="transaction-info__data">9 999
-                  999&nbsp;₽</span></p>
+                  </svg>
+                  John Smith
+                </span>
+              </p>
+              <p class="transaction-info__item transaction-info__item--exchangerate">
+                <span class="transaction-info__label">Курс</span>
+                <span class="transaction-info__data">9 999 999&nbsp;₽</span>
+              </p>
               <p class="transaction-info__item transaction-info__item--cashlimit"><span
-                  class="transaction-info__label">Лимит</span><span class="transaction-info__data">9 999
-                  999&nbsp;₽&nbsp;-&nbsp;9 999 999 000&nbsp;₽</span></p>
+                class="transaction-info__label">Лимит</span><span class="transaction-info__data">9 999
+                999&nbsp;₽&nbsp;-&nbsp;9 999 999 000&nbsp;₽</span>
+              </p>
             </div>
             <div class="modal__container modal__container--small">
               <div class="modal__input-wrapper modal__input-wrapper--min">
                 <div class="custom-input">
                   <label><span class="custom-input__label">Оплата</span><span class="custom-input__unit">₽</span>
-                    <button class="btn btn--textblue custom-input__btn" type="button">обменять все
-                    </button>
-                    <input type="number" value="" placeholder="0">
+                  <button class="btn btn--textblue custom-input__btn" type="button">обменять все</button>
+                  <input type="number" value="" placeholder="0">
                   </label>
                   <!-- Пример стилизации ошибки валидации -->
                   <div class="custom-input__error">Минимальная сумма — 9 999 999 ₽</div>
@@ -337,19 +334,20 @@
               <div class="modal__input-wrapper modal__input-wrapper--min">
                 <div class="custom-input">
                   <label><span class="custom-input__label">Зачисление</span><span class="custom-input__unit">KEKS</span>
-                    <input type="number" placeholder="0">
+                  <input type="number" placeholder="0">
                   </label>
                 </div>
               </div>
             </div>
             <div class="modal__container">
               <div class="modal__select-wrapper">
-                <div class="select"><span>Плaтёжная система</span>
+                <div class="select">
+                  <span>Плaтёжная система</span>
                   <!--
-                                        При отрисовке в списке платёжных систем нужно отразить только те,
-                                        которые есть у пользователя. Способ - удалить из разметки или добавить disable-атрибут
-                                        остаётся на ваше усмотрение. Первый пункт, с предложением выбора, должен быть всегда
-                                    -->
+                    При отрисовке в списке платёжных систем нужно отразить только те,
+                    которые есть у пользователя. Способ - удалить из разметки или добавить disable-атрибут
+                    остаётся на ваше усмотрение. Первый пункт, с предложением выбора, должен быть всегда
+                    -->
                   <select>
                     <option selected disabled>Выберите платёжную систему</option>
                     <option>CryptoEx</option>
@@ -363,21 +361,21 @@
                 <div class="custom-input">
                   <!-- В случае, если выбрана оплата наличными, поле нужно оставить пустым -->
                   <label><span class="custom-input__label">Номер банковской карты пользователя</span>
-                    <input type="number" placeholder="1234 5678 9012 3456" disabled>
+                  <input type="number" placeholder="1234 5678 9012 3456" disabled>
                   </label>
                 </div>
               </div>
               <div class="modal__input-wrapper modal__input-wrapper--decorated">
                 <div class="custom-input">
                   <label><span class="custom-input__label">Номер криптокошелька пользователя</span>
-                    <input type="number" placeholder="08701943851-9832345" disabled>
+                  <input type="number" placeholder="08701943851-9832345" disabled>
                   </label>
                 </div>
               </div>
               <div class="modal__input-wrapper modal__input-wrapper--decorated">
                 <div class="custom-input">
                   <label><span class="custom-input__label">Платёжный пароль</span>
-                    <input type="password" value="123456" placeholder="Введите пароль">
+                  <input type="password" value="123456" placeholder="Введите пароль">
                   </label>
                 </div>
               </div>
@@ -387,17 +385,19 @@
               <p class="modal__validation-message modal__validation-message--error">
                 <svg width="20" height="20" aria-hidden="true">
                   <use xlink:href="#icon-error"></use>
-                </svg>Ошибка заполнения формы
+                </svg>
+                Ошибка заполнения формы
               </p>
               <!-- Сообщение, которое нужно показать в случае успешной отправки данных -->
               <p class="modal__validation-message modal__validation-message--success">
                 <svg width="20" height="20" aria-hidden="true">
                   <use xlink:href="#icon-success"></use>
-                </svg>Данные успешно отправлены
+                </svg>
+                Данные успешно отправлены
               </p>
             </div>
           </form>
-          <button class="close-btn modal__close-btn" type="button" aria-label="Закрыть попап">
+          <button class="close-btn modal__close-btn modal__close-btn--buy" type="button" aria-label="Закрыть попап">
             <svg width="8" height="8" aria-hidden="true">
               <use xlink:href="#icon-close-small"></use>
             </svg>
@@ -405,15 +405,14 @@
         </div>
       </div>
     </div>
-
     <!--
-            При открытии попапа данные нужно заменить на настоящие.
-            Для удобства обращения из JS, вы можете добавить обёрткам id
-            или уникальные классы там, где их нет, а также сами обёрки (используйте <span>)
+      При открытии попапа данные нужно заменить на настоящие.
+      Для удобства обращения из JS, вы можете добавить обёрткам id
+      или уникальные классы там, где их нет, а также сами обёрки (используйте <span>)
 
-            Обратите внимание, что при открытии попапа также нужно убрать скролл с body,
-            для этого можете использовать класс "scroll-lock"
-        -->
+      Обратите внимание, что при открытии попапа также нужно убрать скролл с body,
+      для этого можете использовать класс "scroll-lock"
+      -->
     <div class="modal modal--sell" style="display: none;">
       <div class="modal__wrapper">
         <div class="modal__overlay" data-close-modal></div>
@@ -422,16 +421,15 @@
           <!-- Не забудьте указать верный action-атрибут -->
           <form class="modal-sell" method="post">
             <!--
-                            Обратите внимание, что всем полям для отправки на сервер нужно указать
-                            атрибуты name (их список вы найдёте в техзадании), а часть полей
-                            вообще отправляется скрытыми
-                        -->
+              Обратите внимание, что всем полям для отправки на сервер нужно указать
+              атрибуты name (их список вы найдёте в техзадании), а часть полей
+              вообще отправляется скрытыми
+              -->
             <input type="hidden" name="type" value="SELL">
             <input type="hidden" name="contractorId">
             <input type="hidden" name="exchangeRate">
             <input type="hidden" name="sendingCurrency">
             <input type="hidden" name="receivingCurrency">
-
             <div class="transaction-info">
               <p class="transaction-info__item transaction-info__item--name">
                 <span class="transaction-info__label">Пользователь</span>
@@ -449,18 +447,18 @@
               <p class="transaction-info__item transaction-info__item--cashlimit">
                 <span class="transaction-info__label">Лимит</span>
                 <span class="transaction-info__data">9 999 999&nbsp;₽&nbsp;-&nbsp;9 999 999
-                  000&nbsp;₽</span>
+                000&nbsp;₽</span>
               </p>
             </div>
             <div class="modal__container">
               <div class="modal__input-wrapper modal__input-wrapper--min">
                 <div class="custom-input">
                   <label>
-                    <span class="custom-input__label">Оплата</span>
-                    <span class="custom-input__unit">KEKS</span>
-                    <button class="btn btn--textblue custom-input__btn" type="button">обменять
-                      все</button>
-                    <input type="number" value="" placeholder="0">
+                  <span class="custom-input__label">Оплата</span>
+                  <span class="custom-input__unit">KEKS</span>
+                  <button class="btn btn--textblue custom-input__btn" type="button">обменять
+                  все</button>
+                  <input type="number" value="" placeholder="0">
                   </label>
                   <div class="custom-input__error">Минимальная сумма — 9 999 999 ₽</div>
                 </div>
@@ -471,9 +469,9 @@
               <div class="modal__input-wrapper modal__input-wrapper--min">
                 <div class="custom-input">
                   <label><span class="custom-input__label">Зачисление</span><span class="custom-input__unit">₽</span>
-                    <button class="btn btn--textblue custom-input__btn" type="button">обменять все
-                    </button>
-                    <input type="number" value="" placeholder="0">
+                  <button class="btn btn--textblue custom-input__btn" type="button">обменять все
+                  </button>
+                  <input type="number" value="" placeholder="0">
                   </label>
                 </div>
               </div>
@@ -482,17 +480,18 @@
               <div class="modal__input-wrapper modal__input-wrapper--decorated">
                 <div class="custom-input">
                   <label><span class="custom-input__label">Номер криптокошелька пользователя</span>
-                    <input type="number" placeholder="08701943851-983457-2345" disabled>
+                  <input type="number" placeholder="08701943851-983457-2345" disabled>
                   </label>
                 </div>
               </div>
               <div class="modal__select-wrapper">
-                <div class="select"><span>Плaтёжная система</span>
+                <div class="select">
+                  <span>Плaтёжная система</span>
                   <!--
-                                        При отрисовке в списке платёжных систем нужно отразить только те,
-                                        которые есть у пользователя. Способ - удалить из разметки или добавить disable-атрибут
-                                        остаётся на ваше усмотрение. Первый пункт, с предложением выбора, должен быть всегда
-                                    -->
+                    При отрисовке в списке платёжных систем нужно отразить только те,
+                    которые есть у пользователя. Способ - удалить из разметки или добавить disable-атрибут
+                    остаётся на ваше усмотрение. Первый пункт, с предложением выбора, должен быть всегда
+                    -->
                   <select>
                     <option selected disabled>Выберите платёжную систему</option>
                     <option>CryptoEx</option>
@@ -506,14 +505,14 @@
                 <div class="custom-input">
                   <!-- В случае, если выбрана оплата наличными, поле нужно оставить пустым -->
                   <label><span class="custom-input__label">Номер банковской карты пользователя</span>
-                    <input type="number" placeholder="1234 5678 9012 3456" disabled>
+                  <input type="number" placeholder="1234 5678 9012 3456" disabled>
                   </label>
                 </div>
               </div>
               <div class="modal__input-wrapper modal__input-wrapper--decorated">
                 <div class="custom-input">
                   <label><span class="custom-input__label">Платёжный пароль</span>
-                    <input type="password" placeholder="Введите пароль">
+                  <input type="password" placeholder="Введите пароль">
                   </label>
                 </div>
               </div>
@@ -523,17 +522,19 @@
               <p class="modal__validation-message modal__validation-message--error">
                 <svg width="20" height="20" aria-hidden="true">
                   <use xlink:href="#icon-error"></use>
-                </svg>Ошибка заполнения формы
+                </svg>
+                Ошибка заполнения формы
               </p>
               <!-- Сообщение, которое нужно показать в случае успешной отправки данных -->
               <p class="modal__validation-message modal__validation-message--success">
                 <svg width="20" height="20" aria-hidden="true">
                   <use xlink:href="#icon-success"></use>
-                </svg>Данные успешно отправлены
+                </svg>
+                Данные успешно отправлены
               </p>
             </div>
           </form>
-          <button class="close-btn modal__close-btn" type="button" aria-label="Закрыть попап">
+          <button class="close-btn modal__close-btn modal__close-btn--sell" type="button" aria-label="Закрыть попап">
             <svg width="8" height="8" aria-hidden="true">
               <use xlink:href="#icon-close-small"></use>
             </svg>
@@ -541,13 +542,12 @@
         </div>
       </div>
     </div>
-
     <template id="user-table-row__template">
       <!--
-                При клонировании данные нужно заменить на настоящие.
-                Для удобства обращения из JS, вы можете добавить обёрткам id
-                или уникальные классы там, где их нет, а также сами обёрки (используйте <span>)
-            -->
+        При клонировании данные нужно заменить на настоящие.
+        Для удобства обращения из JS, вы можете добавить обёрткам id
+        или уникальные классы там, где их нет, а также сами обёрки (используйте <span>)
+        -->
       <tr class="users-list__table-row">
         <td class="users-list__table-cell users-list__table-name">
           <!-- Обратите внимание, что "звёздочка только" у верифицированных пользователей -->
@@ -559,7 +559,8 @@
         <td class="users-list__table-cell users-list__table-currency">keks</td>
         <td class="users-list__table-cell users-list__table-exchangerate">9 999 999&nbsp;₽</td>
         <td class="users-list__table-cell users-list__table-cashlimit">9 999
-          999&nbsp;₽&nbsp;-&nbsp;9 999 999 000&nbsp;₽</td>
+          999&nbsp;₽&nbsp;-&nbsp;9 999 999 000&nbsp;₽
+        </td>
         <td class="users-list__table-cell users-list__table-payments">
           <ul class="users-list__badges-list">
             <li class="users-list__badges-item badge">BitTransfer</li>
@@ -568,18 +569,16 @@
           </ul>
         </td>
         <td class="users-list__table-cell users-list__table-btn">
-          <button class="btn btn--greenborder" type="button">Обменять
-          </button>
+          <button class="btn btn--greenborder" type="button">Обменять</button>
         </td>
       </tr>
     </template>
-
     <template id="map-baloon__template">
       <!--
-                При клонировании данные нужно заменить на настоящие.
-                Для удобства обращения из JS, вы можете добавить обёрткам id
-                или уникальные классы там, где их нет, а также сами обёрки (используйте <span>)
-            -->
+        При клонировании данные нужно заменить на настоящие.
+        Для удобства обращения из JS, вы можете добавить обёрткам id
+        или уникальные классы там, где их нет, а также сами обёрки (используйте <span>)
+        -->
       <div class="user-card">
         <span class="user-card__user-name">
           <!-- Обратите внимание, что "звёздочка только" у верифицированных пользователей -->
@@ -608,7 +607,6 @@
         <button class="btn btn--green user-card__change-btn" type="button">Обменять</button>
       </div>
     </template>
-
     <script src="./leaflet/leaflet.js" type="text/javascript"></script>
     <script src="./js/main.js" type="module"></script>
   </body>

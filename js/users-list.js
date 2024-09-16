@@ -1,5 +1,7 @@
+import { createPaymentMethodsList, hideElement } from './utils.js';
 import { initiateMap } from './users-map.js';
-import { createPaymentMethodsList } from './utils.js';
+import { modalBuyWindow, modalSellWindow, giveButtonsEventListener, deleteEventListenerFromButtons } from './modal.js';
+
 
 const contractorsContainer = document.querySelector('.users-list');
 const contractorsListTable = contractorsContainer.querySelector('.users-list__table-body');
@@ -33,7 +35,7 @@ const clearContractorsTable = () => {
   contractorsListTable.innerHTML = '';
 };
 
-export const renderContractorTableRow = (contractor) => {
+export const renderContractorTableRow = (contractor, exchangeType) => {
   const domParser = new DOMParser();
   const contractorRow = `
     <table>
@@ -49,7 +51,7 @@ export const renderContractorTableRow = (contractor) => {
           ${createPaymentMethodsList('users-list__badges-list')}
         </td>
         <td class="users-list__table-cell users-list__table-btn">
-          <button class="btn btn--greenborder" type="button">Обменять</button>
+          <button class="btn btn--greenborder exchange-btn exchange-btn--${exchangeType}" type="button">Обменять</button>
         </td>
       </tr>
     </table>
@@ -60,11 +62,11 @@ export const renderContractorTableRow = (contractor) => {
   return parsedStringElement.querySelector('tr');
 };
 
-const renderContractorsTableList = (contractorsList) => {
+const renderContractorsTableList = (contractorsList, exchangeType) => {
   clearContractorsTable();
 
   contractorsList.forEach((value) => {
-    const renderedUser = renderContractorTableRow(value);
+    const renderedUser = renderContractorTableRow(value, exchangeType);
     contractorsListTable.append(renderedUser);
   });
 };
@@ -77,35 +79,23 @@ const addIsActiveClass = (element) => {
   element.classList.add('is-active');
 };
 
-const renderOnlyVerifiedUsers = () => {
+const renderOnlyVerifiedUsers = (exchangeType) => {
   if (isVerifiedCheckbox.checked) {
     const onlyVerifiedContractors = [...currentRenderedList].filter((element) => element.isVerified);
 
-    renderContractorsTableList(onlyVerifiedContractors);
+    renderContractorsTableList(onlyVerifiedContractors, exchangeType);
   } else {
-    renderContractorsTableList([...currentRenderedList]);
+    renderContractorsTableList([...currentRenderedList], exchangeType);
   }
-};
-
-const hideElement = (element) => {
-  element.style = 'display: none;';
-};
-
-const showMapContainer = () => {
-  hideElement(contractorsContainer);
-  mapContainer.removeAttribute('style');
-};
-
-const showListContainer = () => {
-  hideElement(mapContainer);
-  contractorsContainer.removeAttribute('style');
 };
 
 buyListControlButton.addEventListener('click', () => {
   removeIsActiveClass(sellListControlButton);
   addIsActiveClass(buyListControlButton);
   currentRenderedList = [...buyersList];
-  renderOnlyVerifiedUsers();
+  renderOnlyVerifiedUsers('buyer');
+  deleteEventListenerFromButtons('sell', () => modalSellWindow.removeAttribute('style'));
+  giveButtonsEventListener('buy', () => modalBuyWindow.removeAttribute('style'));
 
 });
 
@@ -113,7 +103,9 @@ sellListControlButton.addEventListener('click', () => {
   removeIsActiveClass(buyListControlButton);
   addIsActiveClass(sellListControlButton);
   currentRenderedList = [...sellersList];
-  renderOnlyVerifiedUsers();
+  renderOnlyVerifiedUsers('seller');
+  deleteEventListenerFromButtons('buy', () => modalBuyWindow.removeAttribute('style'));
+  giveButtonsEventListener('sell', () => modalSellWindow.removeAttribute('style'));
 });
 
 isVerifiedCheckbox.addEventListener('change', renderOnlyVerifiedUsers);
@@ -121,13 +113,15 @@ isVerifiedCheckbox.addEventListener('change', renderOnlyVerifiedUsers);
 viewContractorsByListButton.addEventListener('click', () => {
   removeIsActiveClass(viewContractorsByMapButton);
   addIsActiveClass(viewContractorsByListButton);
-  showListContainer();
+  hideElement(mapContainer);
+  contractorsContainer.removeAttribute('style');
 });
 
 viewContractorsByMapButton.addEventListener('click', () => {
   removeIsActiveClass(viewContractorsByListButton);
   addIsActiveClass(viewContractorsByMapButton);
-  showMapContainer();
+  hideElement(contractorsContainer);
+  mapContainer.removeAttribute('style');
   initiateMap(sellersList.filter((contractor) => contractor.coords));
 });
 
@@ -137,9 +131,11 @@ getContractorsData().then((usersData) => {
   buyersList = copyUsersData.filter((element) => element.status === 'buyer');
   sellersList = copyUsersData.filter((element) => element.status === 'seller');
 
-  renderContractorsTableList(buyersList);
+  renderContractorsTableList(buyersList, 'buyer');
+  giveButtonsEventListener('buy', () => modalBuyWindow.removeAttribute('style'));
 
   currentRenderedList = [...buyersList];
+
 });
 
 getUserProfile().then((userProfileData) => {

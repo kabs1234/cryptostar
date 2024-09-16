@@ -1,10 +1,8 @@
 export const PAYMENT_METHODS = [
-  'CryptoCloud',
-  'BitPay',
-  'Coinbase',
-  'NowPayments',
-  'CoinPayments',
-  'Coingate'
+  'CryptoEx',
+  'Первый криптобанк',
+  'BitTransfer',
+  'BMT Exchange',
 ];
 
 export const CENTRE_OF_MAP = [59.92749, 30.31127];

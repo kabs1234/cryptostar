@@ -27,7 +27,7 @@ const renderContractorPopup = (contractor) => {
         <span class="user-card__cash-data">${Math.floor(contractor.exchangeRate * Math.floor(contractor.balance.amount))} ₽</span>
       </p>
       ${createPaymentMethodsList('user-card__badges-list')}
-      <button class="btn btn--green user-card__change-btn" type="button">Обменять</button>
+      <button class="btn btn--green user-card__change-btn exchange-btn" type="button">Обменять</button>
     </div>
   `;
   const parsedStringElement = domParser.parseFromString(contractorPopup, 'text/html');
