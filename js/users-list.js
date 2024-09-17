@@ -1,7 +1,6 @@
 import { createPaymentMethodsList, hideElement } from './utils.js';
 import { initiateMap } from './users-map.js';
-import { modalBuyWindow, modalSellWindow, giveButtonsEventListener, deleteEventListenerFromButtons } from './modal.js';
-
+import { modalBuyWindow, modalSellWindow, giveButtonsEventListener, deleteEventListenerFromButtons, showModalWindow } from './modal.js';
 
 const contractorsContainer = document.querySelector('.users-list');
 const contractorsListTable = contractorsContainer.querySelector('.users-list__table-body');
@@ -46,12 +45,12 @@ export const renderContractorTableRow = (contractor, exchangeType) => {
         </td>
         <td class="users-list__table-cell users-list__table-currency">keks</td>
         <td class="users-list__table-cell users-list__table-exchangerate">${contractor.exchangeRate}₽</td>
-        <td class="users-list__table-cell users-list__table-cashlimit">${contractor.balance.amount}₽</td>
+        <td class="users-list__table-cell users-list__table-cashlimit">${exchangeType === 'seller' ? Math.floor(Math.floor(contractor.balance.amount) * contractor.exchangeRate) : contractor.balance.amount}₽</td>
         <td class="users-list__table-cell users-list__table-payments">
           ${createPaymentMethodsList('users-list__badges-list')}
         </td>
         <td class="users-list__table-cell users-list__table-btn">
-          <button class="btn btn--greenborder exchange-btn exchange-btn--${exchangeType}" type="button">Обменять</button>
+          <button class="btn btn--greenborder exchange-btn exchange-btn--${exchangeType}" data-exchange-button-id="${contractor.id}" type="button">Обменять</button>
         </td>
       </tr>
     </table>
@@ -92,23 +91,23 @@ const renderOnlyVerifiedUsers = (exchangeType) => {
 buyListControlButton.addEventListener('click', () => {
   removeIsActiveClass(sellListControlButton);
   addIsActiveClass(buyListControlButton);
-  currentRenderedList = [...buyersList];
-  renderOnlyVerifiedUsers('buyer');
-  deleteEventListenerFromButtons('sell', () => modalSellWindow.removeAttribute('style'));
-  giveButtonsEventListener('buy', () => modalBuyWindow.removeAttribute('style'));
+  currentRenderedList = [...sellersList];
+  renderOnlyVerifiedUsers('seller');
+  deleteEventListenerFromButtons('buy', (evt) => showModalWindow(modalSellWindow, currentRenderedList, evt.target));
+  giveButtonsEventListener('sell', (evt) => showModalWindow(modalBuyWindow, currentRenderedList, evt.target));
 
 });
 
 sellListControlButton.addEventListener('click', () => {
   removeIsActiveClass(buyListControlButton);
   addIsActiveClass(sellListControlButton);
-  currentRenderedList = [...sellersList];
-  renderOnlyVerifiedUsers('seller');
-  deleteEventListenerFromButtons('buy', () => modalBuyWindow.removeAttribute('style'));
-  giveButtonsEventListener('sell', () => modalSellWindow.removeAttribute('style'));
+  currentRenderedList = [...buyersList];
+  renderOnlyVerifiedUsers('buyer');
+  deleteEventListenerFromButtons('sell', (evt) => showModalWindow(modalBuyWindow, currentRenderedList, evt.target));
+  giveButtonsEventListener('buy', (evt) => showModalWindow(modalSellWindow, currentRenderedList, evt.target));
 });
 
-isVerifiedCheckbox.addEventListener('change', renderOnlyVerifiedUsers);
+isVerifiedCheckbox.addEventListener('change', () => renderOnlyVerifiedUsers('buyer'));
 
 viewContractorsByListButton.addEventListener('click', () => {
   removeIsActiveClass(viewContractorsByMapButton);
@@ -126,16 +125,12 @@ viewContractorsByMapButton.addEventListener('click', () => {
 });
 
 getContractorsData().then((usersData) => {
-  const copyUsersData = [...usersData];
+  buyersList = usersData.filter((element) => element.status === 'buyer');
+  sellersList = usersData.filter((element) => element.status === 'seller');
 
-  buyersList = copyUsersData.filter((element) => element.status === 'buyer');
-  sellersList = copyUsersData.filter((element) => element.status === 'seller');
-
-  renderContractorsTableList(buyersList, 'buyer');
-  giveButtonsEventListener('buy', () => modalBuyWindow.removeAttribute('style'));
-
-  currentRenderedList = [...buyersList];
-
+  renderContractorsTableList(sellersList, 'seller');
+  giveButtonsEventListener('sell', (evt) => showModalWindow(modalBuyWindow, sellersList, evt.target));
+  currentRenderedList = [...sellersList];
 });
 
 getUserProfile().then((userProfileData) => {
