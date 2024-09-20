@@ -353,7 +353,7 @@
                 <div class="custom-input">
                   <label>
                     <span class="custom-input__label">Оплата</span><span class="custom-input__unit">₽</span>
-                    <button class="btn btn--textblue custom-input__btn" type="button">обменять все</button>
+                    <button class="btn btn--textblue custom-input__btn custom-input__btn--exchange-currency" type="button">обменять все</button>
                     <input class="custom-input__payment" type="number" value="" placeholder="0" />
                   </label>
                   <!-- Пример стилизации ошибки валидации -->
@@ -381,7 +381,7 @@
                     которые есть у пользователя. Способ - удалить из разметки или добавить disable-атрибут
                     остаётся на ваше усмотрение. Первый пункт, с предложением выбора, должен быть всегда
                     -->
-                  <select>
+                  <select class="select-menu">
                     <option selected disabled>Выберите платёжную систему</option>
                     <option>CryptoEx</option>
                     <option>Первый криптобанк</option>
@@ -395,7 +395,7 @@
                   <!-- В случае, если выбрана оплата наличными, поле нужно оставить пустым -->
                   <label>
                     <span class="custom-input__label">Номер банковской карты пользователя</span>
-                    <input type="number" placeholder="1234 5678 9012 3456" disabled />
+                    <input class="custom-input__card-number" type="text" placeholder="1234 5678 9012 3456" disabled />
                   </label>
                 </div>
               </div>
@@ -403,7 +403,7 @@
                 <div class="custom-input">
                   <label>
                     <span class="custom-input__label">Номер криптокошелька пользователя</span>
-                    <input type="number" placeholder="08701943851-9832345" disabled />
+                    <input class="custom-input__crypto-wallet" type="text" placeholder="08701943851-9832345" disabled />
                   </label>
                 </div>
               </div>
@@ -411,7 +411,7 @@
                 <div class="custom-input">
                   <label>
                     <span class="custom-input__label">Платёжный пароль</span>
-                    <input type="password" value="123456" placeholder="Введите пароль" />
+                    <input class="custom-input__password" type="password" value="123456" placeholder="Введите пароль" />
                   </label>
                 </div>
               </div>
@@ -490,7 +490,7 @@
                   <label>
                     <span class="custom-input__label">Оплата</span>
                     <span class="custom-input__unit">KEKS</span>
-                    <button class="btn btn--textblue custom-input__btn" type="button">обменять все</button>
+                    <button class="btn btn--textblue custom-input__btn custom-input__btn--exchange-crypto" type="button">обменять все</button>
                     <input class="custom-input__payment" type="number" value="" placeholder="0" />
                   </label>
                   <div class="custom-input__error">Минимальная сумма — 9 999 999 ₽</div>
@@ -503,7 +503,7 @@
                 <div class="custom-input">
                   <label>
                     <span class="custom-input__label">Зачисление</span><span class="custom-input__unit">₽</span>
-                    <button class="btn btn--textblue custom-input__btn" type="button">обменять все</button>
+                    <button class="btn btn--textblue custom-input__btn custom-input__btn--exchange-currency" type="button">обменять все</button>
                     <input class="custom-input__enrollment" type="number" value="" placeholder="0" />
                   </label>
                 </div>
@@ -514,7 +514,7 @@
                 <div class="custom-input">
                   <label>
                     <span class="custom-input__label">Номер криптокошелька пользователя</span>
-                    <input class="custom-input__enrollment" type="number" placeholder="08701943851-983457-2345" disabled />
+                    <input class="custom-input__crypto-wallet" type="text" placeholder="08701943851-983457-2345" disabled />
                   </label>
                 </div>
               </div>
@@ -526,7 +526,7 @@
                     которые есть у пользователя. Способ - удалить из разметки или добавить disable-атрибут
                     остаётся на ваше усмотрение. Первый пункт, с предложением выбора, должен быть всегда
                     -->
-                  <select>
+                  <select class="select-menu">
                     <option selected disabled>Выберите платёжную систему</option>
                     <option>CryptoEx</option>
                     <option>Первый криптобанк</option>
@@ -540,7 +540,7 @@
                   <!-- В случае, если выбрана оплата наличными, поле нужно оставить пустым -->
                   <label>
                     <span class="custom-input__label">Номер банковской карты пользователя</span>
-                    <input type="number" placeholder="1234 5678 9012 3456" disabled />
+                    <input class="custom-input__card-number" type="text" placeholder="1234 5678 9012 3456" disabled />
                   </label>
                 </div>
               </div>
@@ -548,7 +548,7 @@
                 <div class="custom-input">
                   <label>
                     <span class="custom-input__label">Платёжный пароль</span>
-                    <input type="password" placeholder="Введите пароль" />
+                    <input class="custom-input__password" type="password" placeholder="Введите пароль" />
                   </label>
                 </div>
               </div>
@@ -640,7 +640,8 @@
         <button class="btn btn--green user-card__change-btn" type="button">Обменять</button>
       </div>
     </template>
-    <script src="./leaflet/leaflet.js" type="text/javascript"></script>
+    <script src="./pristine/pristine.min.js"></script>
+    <script src="./leaflet/leaflet.js"></script>
     <script src="./js/main.js" type="module"></script>
   </body>
 </html>

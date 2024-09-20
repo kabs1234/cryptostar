@@ -1,6 +1,6 @@
 import { createPaymentMethodsList, hideElement } from './utils.js';
 import { initiateMap } from './users-map.js';
-import { modalBuyWindow, modalSellWindow, giveButtonsEventListener, deleteEventListenerFromButtons, showModalWindow } from './modal.js';
+import { giveButtonsEventListener, showModalWindow } from './modal.js';
 
 const contractorsContainer = document.querySelector('.users-list');
 const contractorsListTable = contractorsContainer.querySelector('.users-list__table-body');
@@ -19,6 +19,7 @@ const viewContractorsByMapButton = tabControlButtons[3];
 let buyersList;
 let sellersList;
 let currentRenderedList;
+let savedUserData;
 
 const getContractorsData = async () => {
   const contractorsData = await fetch('https://cryptostar.grading.htmlacademy.pro/contractors');
@@ -36,6 +37,10 @@ const clearContractorsTable = () => {
 
 export const renderContractorTableRow = (contractor, exchangeType) => {
   const domParser = new DOMParser();
+  const minCashLimit = exchangeType === 'seller' ? Math.floor(Math.floor(contractor.minAmount) * contractor.exchangeRate) : contractor.minAmount;
+  const maxCashLimit = exchangeType === 'seller' ? Math.floor(Math.floor(contractor.balance.amount) * contractor.exchangeRate) : contractor.balance.amount;
+  const paymentMethodsArray = exchangeType === 'seller' ? contractor.paymentMethods.map((element) => element.provider) : savedUserData.paymentMethods.map((element) => element.provider);
+
   const contractorRow = `
     <table>
       <tr class="users-list__table-row">
@@ -44,10 +49,10 @@ export const renderContractorTableRow = (contractor, exchangeType) => {
           <span>${contractor.userName}</span>
         </td>
         <td class="users-list__table-cell users-list__table-currency">keks</td>
-        <td class="users-list__table-cell users-list__table-exchangerate">${contractor.exchangeRate}₽</td>
-        <td class="users-list__table-cell users-list__table-cashlimit">${exchangeType === 'seller' ? Math.floor(Math.floor(contractor.balance.amount) * contractor.exchangeRate) : contractor.balance.amount}₽</td>
+        <td class="users-list__table-cell users-list__table-exchangerate">${contractor.exchangeRate} ₽</td>
+        <td class="users-list__table-cell users-list__table-cashlimit">${minCashLimit} ₽ - ${maxCashLimit} ₽</td>
         <td class="users-list__table-cell users-list__table-payments">
-          ${createPaymentMethodsList('users-list__badges-list')}
+          ${createPaymentMethodsList('users-list__badges-list', paymentMethodsArray)}
         </td>
         <td class="users-list__table-cell users-list__table-btn">
           <button class="btn btn--greenborder exchange-btn exchange-btn--${exchangeType}" data-exchange-button-id="${contractor.id}" type="button">Обменять</button>
@@ -88,26 +93,45 @@ const renderOnlyVerifiedUsers = (exchangeType) => {
   }
 };
 
-buyListControlButton.addEventListener('click', () => {
-  removeIsActiveClass(sellListControlButton);
-  addIsActiveClass(buyListControlButton);
+isVerifiedCheckbox.disabled = true;
+
+getUserProfile().then((userProfileData) => {
+  savedUserData = {...userProfileData};
+
+  userName.textContent = userProfileData.userName;
+  userCryptoBalance.textContent = userProfileData.balances[1].amount;
+  userCurrencyBalance.textContent = userProfileData.balances[0].amount;
+});
+
+getContractorsData().then((contractorsData) => {
+  buyersList = contractorsData.filter((element) => element.status === 'buyer');
+  sellersList = contractorsData.filter((element) => element.status === 'seller');
+
+
+  renderContractorsTableList(sellersList, 'seller');
+  giveButtonsEventListener('sell', (evt) => showModalWindow(sellersList, evt.target, savedUserData));
   currentRenderedList = [...sellersList];
-  renderOnlyVerifiedUsers('seller');
-  deleteEventListenerFromButtons('buy', (evt) => showModalWindow(modalSellWindow, currentRenderedList, evt.target));
-  giveButtonsEventListener('sell', (evt) => showModalWindow(modalBuyWindow, currentRenderedList, evt.target));
+  isVerifiedCheckbox.disabled = false;
 
+  buyListControlButton.addEventListener('click', () => {
+    removeIsActiveClass(sellListControlButton);
+    addIsActiveClass(buyListControlButton);
+    currentRenderedList = [...sellersList];
+    renderOnlyVerifiedUsers('seller');
+    giveButtonsEventListener('sell', (evt) => showModalWindow(currentRenderedList, evt.target, savedUserData));
+  });
+
+  sellListControlButton.addEventListener('click', () => {
+    removeIsActiveClass(buyListControlButton);
+    addIsActiveClass(sellListControlButton);
+    currentRenderedList = [...buyersList];
+    renderOnlyVerifiedUsers('buyer');
+    giveButtonsEventListener('buy', (evt) => showModalWindow(currentRenderedList, evt.target, savedUserData));
+  });
+
+  isVerifiedCheckbox.addEventListener('change', () => renderOnlyVerifiedUsers('buyer'));
 });
 
-sellListControlButton.addEventListener('click', () => {
-  removeIsActiveClass(buyListControlButton);
-  addIsActiveClass(sellListControlButton);
-  currentRenderedList = [...buyersList];
-  renderOnlyVerifiedUsers('buyer');
-  deleteEventListenerFromButtons('sell', (evt) => showModalWindow(modalBuyWindow, currentRenderedList, evt.target));
-  giveButtonsEventListener('buy', (evt) => showModalWindow(modalSellWindow, currentRenderedList, evt.target));
-});
-
-isVerifiedCheckbox.addEventListener('change', () => renderOnlyVerifiedUsers('buyer'));
 
 viewContractorsByListButton.addEventListener('click', () => {
   removeIsActiveClass(viewContractorsByMapButton);
@@ -122,19 +146,4 @@ viewContractorsByMapButton.addEventListener('click', () => {
   hideElement(contractorsContainer);
   mapContainer.removeAttribute('style');
   initiateMap(sellersList.filter((contractor) => contractor.coords));
-});
-
-getContractorsData().then((usersData) => {
-  buyersList = usersData.filter((element) => element.status === 'buyer');
-  sellersList = usersData.filter((element) => element.status === 'seller');
-
-  renderContractorsTableList(sellersList, 'seller');
-  giveButtonsEventListener('sell', (evt) => showModalWindow(modalBuyWindow, sellersList, evt.target));
-  currentRenderedList = [...sellersList];
-});
-
-getUserProfile().then((userProfileData) => {
-  userName.textContent = userProfileData.userName;
-  userCryptoBalance.textContent = userProfileData.balances[1].amount;
-  userCurrencyBalance.textContent = userProfileData.balances[0].amount;
 });

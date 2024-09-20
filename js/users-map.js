@@ -7,6 +7,8 @@ const map = L.map(mapWrapper);
 
 const renderContractorPopup = (contractor) => {
   const domParser = new DOMParser();
+  const paymentMethodsArray = contractor.paymentMethods.map((element) => element.provider);
+
 
   const contractorPopup = `
     <div class="user-card">
@@ -26,7 +28,7 @@ const renderContractorPopup = (contractor) => {
         <span class="user-card__cash-label">Лимит</span>
         <span class="user-card__cash-data">${Math.floor(contractor.exchangeRate * Math.floor(contractor.balance.amount))} ₽</span>
       </p>
-      ${createPaymentMethodsList('user-card__badges-list')}
+      ${createPaymentMethodsList('user-card__badges-list', paymentMethodsArray)}
       <button class="btn btn--green user-card__change-btn exchange-btn" type="button">Обменять</button>
     </div>
   `;

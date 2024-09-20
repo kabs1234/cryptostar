@@ -1,35 +1,30 @@
-import { PAYMENT_METHODS } from './constants.js';
-
 export const getRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
 export const getRandomElement = (array) => array[getRandomNumber(0, array.length - 1)];
 
-export const generatePaymentMethods = () => {
-  const paymentMethodsQuantity = getRandomNumber(1, PAYMENT_METHODS.length);
-  const paymentMethodsCopy = [...PAYMENT_METHODS];
-  const paymentMethodsArray = [];
-
-  for (let i = 0; i < paymentMethodsQuantity; i++) {
-    const randomPaymentMethod = getRandomElement(paymentMethodsCopy);
-    const selectedPaymentMethodIndex = paymentMethodsCopy.indexOf(randomPaymentMethod);
-
-    paymentMethodsArray.push(randomPaymentMethod);
-    paymentMethodsCopy.splice(selectedPaymentMethodIndex, 1);
-  }
-
-  return paymentMethodsArray;
-};
-
-export const createPaymentMethodsList = (listClass) => {
-  const paymentMethodsStrings = generatePaymentMethods().map((element) => `<li class="users-list__badges-item badge">${element}</li>`);
+export const createPaymentMethodsList = (listClass, paymentMethods) => {
+  const paymentMethodsStrings = paymentMethods.map((element) => `<li class="users-list__badges-item badge">${element}</li>`);
 
   return `<ul class="${listClass}">${paymentMethodsStrings.join('\n')}</ul>`;
+};
+
+export const createPaymentMethodsSelectMenu = (paymentMethods) => {
+  const domParser = new DOMParser();
+
+  const paymentMethodsOptionsStrings = paymentMethods.map((element) => `<option data-payment-method="${element.provider}">${element.provider}</option>`);
+  const paymentMethodsSelectMenu = `
+    <select class="select-menu">
+      <option selected="" disabled="">Выберите платёжную систему</option>
+      ${paymentMethodsOptionsStrings.join('\n')}
+    </select>
+  `;
+
+  const parsedSelectMenu = domParser.parseFromString(paymentMethodsSelectMenu, 'text/html');
+
+  return parsedSelectMenu.body.firstChild;
 };
 
 export const hideElement = (element) => {
   element.style = 'display: none;';
 };
 
-export const removeAttributeFromElement = (element, attribute) => {
-  element.removeAttribute(attribute);
-};
