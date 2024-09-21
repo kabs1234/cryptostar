@@ -1,5 +1,5 @@
 import { createPaymentMethodsList, hideElement } from './utils.js';
-import { initiateMap } from './users-map.js';
+import { initiateMap, replaceContractorMarkers } from './users-map.js';
 import { giveButtonsEventListener, showModalWindow } from './modal.js';
 
 const contractorsContainer = document.querySelector('.users-list');
@@ -35,10 +35,11 @@ const clearContractorsTable = () => {
   contractorsListTable.innerHTML = '';
 };
 
-export const renderContractorTableRow = (contractor, exchangeType) => {
+export const renderContractorTableRow = (contractor) => {
   const domParser = new DOMParser();
-  const minCashLimit = exchangeType === 'seller' ? Math.floor(Math.floor(contractor.minAmount) * contractor.exchangeRate) : contractor.minAmount;
-  const maxCashLimit = exchangeType === 'seller' ? Math.floor(Math.floor(contractor.balance.amount) * contractor.exchangeRate) : contractor.balance.amount;
+  const exchangeType = contractor.status;
+  const minCashLimit = exchangeType === 'seller' ? (contractor.minAmount * contractor.exchangeRate).toFixed(2) : contractor.minAmount;
+  const maxCashLimit = exchangeType === 'seller' ? (contractor.balance.amount * contractor.exchangeRate).toFixed(2) : contractor.balance.amount;
   const paymentMethodsArray = exchangeType === 'seller' ? contractor.paymentMethods.map((element) => element.provider) : savedUserData.paymentMethods.map((element) => element.provider);
 
   const contractorRow = `
@@ -66,11 +67,11 @@ export const renderContractorTableRow = (contractor, exchangeType) => {
   return parsedStringElement.querySelector('tr');
 };
 
-const renderContractorsTableList = (contractorsList, exchangeType) => {
+const renderContractorsTableList = (contractorsList) => {
   clearContractorsTable();
 
   contractorsList.forEach((value) => {
-    const renderedUser = renderContractorTableRow(value, exchangeType);
+    const renderedUser = renderContractorTableRow(value);
     contractorsListTable.append(renderedUser);
   });
 };
@@ -83,14 +84,26 @@ const addIsActiveClass = (element) => {
   element.classList.add('is-active');
 };
 
-const renderOnlyVerifiedUsers = (exchangeType) => {
-  if (isVerifiedCheckbox.checked) {
-    const onlyVerifiedContractors = [...currentRenderedList].filter((element) => element.isVerified);
+const renderOnlyVerifiedUsers = () => {
+  const exchangeType = currentRenderedList[0].status;
 
-    renderContractorsTableList(onlyVerifiedContractors, exchangeType);
-  } else {
-    renderContractorsTableList([...currentRenderedList], exchangeType);
+  if (viewContractorsByListButton.classList.contains('is-active')) {
+    if (isVerifiedCheckbox.checked) {
+      const onlyVerifiedContractors = [...currentRenderedList].filter((element) => element.isVerified);
+
+      renderContractorsTableList(onlyVerifiedContractors);
+    } else {
+      renderContractorsTableList([...currentRenderedList]);
+    }
+  } else if (viewContractorsByMapButton.classList.contains('is-active')) {
+    if (isVerifiedCheckbox.checked) {
+      replaceContractorMarkers([...currentRenderedList].filter((element) => element.coords && element.isVerified));
+    } else {
+      replaceContractorMarkers([...currentRenderedList].filter((element) => element.coords));
+    }
   }
+
+  giveButtonsEventListener(exchangeType.slice(0, exchangeType.length - 2), (evt) => showModalWindow(currentRenderedList, evt.target, savedUserData));
 };
 
 isVerifiedCheckbox.disabled = true;
@@ -129,21 +142,20 @@ getContractorsData().then((contractorsData) => {
     giveButtonsEventListener('buy', (evt) => showModalWindow(currentRenderedList, evt.target, savedUserData));
   });
 
-  isVerifiedCheckbox.addEventListener('change', () => renderOnlyVerifiedUsers('buyer'));
-});
+  isVerifiedCheckbox.addEventListener('change', () => renderOnlyVerifiedUsers());
 
+  viewContractorsByListButton.addEventListener('click', () => {
+    removeIsActiveClass(viewContractorsByMapButton);
+    addIsActiveClass(viewContractorsByListButton);
+    hideElement(mapContainer);
+    contractorsContainer.removeAttribute('style');
+  });
 
-viewContractorsByListButton.addEventListener('click', () => {
-  removeIsActiveClass(viewContractorsByMapButton);
-  addIsActiveClass(viewContractorsByListButton);
-  hideElement(mapContainer);
-  contractorsContainer.removeAttribute('style');
-});
-
-viewContractorsByMapButton.addEventListener('click', () => {
-  removeIsActiveClass(viewContractorsByListButton);
-  addIsActiveClass(viewContractorsByMapButton);
-  hideElement(contractorsContainer);
-  mapContainer.removeAttribute('style');
-  initiateMap(sellersList.filter((contractor) => contractor.coords));
+  viewContractorsByMapButton.addEventListener('click', () => {
+    removeIsActiveClass(viewContractorsByListButton);
+    addIsActiveClass(viewContractorsByMapButton);
+    hideElement(contractorsContainer);
+    mapContainer.removeAttribute('style');
+    initiateMap(sellersList.filter((contractor) => contractor.coords), savedUserData);
+  });
 });

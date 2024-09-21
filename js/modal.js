@@ -5,7 +5,6 @@ export const modalSellWindow = document.querySelector('.modal--sell');
 const buyModalCloseButton = document.querySelector('.modal__close-btn--buy');
 const sellModalCloseButton = document.querySelector('.modal__close-btn--sell');
 const modalWindowMessages = document.querySelectorAll('.modal__validation-message');
-let isModalWindowOpened = false;
 let activeModalWindow;
 
 let exchangeBuyButtons;
@@ -54,16 +53,14 @@ const observer = new MutationObserver((mutations) => {
       activeModalWindow = 'sell';
     }
 
-    if (mutation.type === 'attributes' && isModalWindowOpened) {
+    if (mutation.target.style.display === 'none') {
       document.removeEventListener('keydown', keydownListener);
       document.removeEventListener('click', clickOutsideListener);
-      isModalWindowOpened = false;
       document.body.classList.remove('scroll-lock');
       resetModalForm(mutation.target);
-    } else if (mutation.type === 'attributes' && !isModalWindowOpened) {
+    } else if (mutation.target.style.display === '' ) {
       document.addEventListener('keydown', keydownListener);
       document.addEventListener('click', clickOutsideListener);
-      isModalWindowOpened = true;
       document.body.classList.add('scroll-lock');
     }
   });
@@ -75,8 +72,8 @@ const showContractorsData = (modalWindow) => {
   const exchangeRate = modalWindow.querySelector('.transaction-info__item--exchangerate .transaction-info__data');
   const cashLimit = modalWindow.querySelector('.transaction-info__item--cashlimit .transaction-info__data');
   const verifiedIcon = modalWindow.querySelector('.transaction-info__verified-icon');
-  const minCashLimit = modalWindow === modalBuyWindow ? Math.floor(Math.floor(contractor.minAmount) * contractor.exchangeRate) : contractor.minAmount;
-  const maxCashLimitNumber = modalWindow === modalBuyWindow ? Math.floor(Math.floor(contractor.balance.amount) * contractor.exchangeRate) : contractor.balance.amount;
+  const minCashLimit = modalWindow === modalBuyWindow ? contractor.minAmount * contractor.exchangeRate.toFixed(2) : contractor.minAmount;
+  const maxCashLimitNumber = modalWindow === modalBuyWindow ? (contractor.balance.amount * contractor.exchangeRate).toFixed(2) : contractor.balance.amount;
 
   if (contractor.isVerified) {
     verifiedIcon.removeAttribute('style');
@@ -169,10 +166,10 @@ const placeCardNumber = (evt, paymentMethods) => {
 const replaceSelectMenus = (modalWindow, paymentMethods) => {
   const selectMenuWrapper = modalWindow.querySelector('.select');
   const paymentSystemsSelectMenu = modalWindow.querySelector('.select-menu');
-  const newPaymentSystemsSelect = createPaymentMethodsSelectMenu(paymentMethods);
-  selectMenuWrapper.replaceChild(newPaymentSystemsSelect, paymentSystemsSelectMenu);
-
   const cardNumberInput = modalWindow.querySelector('.custom-input__card-number');
+  const newPaymentSystemsSelect = createPaymentMethodsSelectMenu(paymentMethods);
+
+  selectMenuWrapper.replaceChild(newPaymentSystemsSelect, paymentSystemsSelectMenu);
   newPaymentSystemsSelect.addEventListener('change', (evt) => cardNumberInput.value = placeCardNumber(evt, paymentMethods));
 };
 
@@ -213,8 +210,6 @@ const handleModalBuyWindow = () => {
   const modalForm = modalBuyWindow.querySelector('form');
   const pristineForm = new Pristine(modalForm);
 
-
-
   cryptoWalletInput.value = user.wallet.address;
   pristineForm.addValidator(passwordInput, checkPassword, 'check')
   pristineForm.addValidator(paymentInput, checkBuyCurrencyConverting, 'check');
@@ -236,13 +231,13 @@ export const showModalWindow = (allContractorsData, contractorExchangeButton, us
 
   if (contractor.status === 'seller') {
     modalWindowOverlay = modalBuyWindow.querySelector('.modal__overlay');
-    modalBuyWindow.removeAttribute('style');
+    modalBuyWindow.style = "z-index: 1000"
     replaceSelectMenus(modalBuyWindow, contractor.paymentMethods);
     showContractorsData(modalBuyWindow);
     handleModalBuyWindow();
   } else if (contractor.status === 'buyer') {
     modalWindowOverlay = modalSellWindow.querySelector('.modal__overlay');
-    modalSellWindow.removeAttribute('style');
+    modalSellWindow.style = "z-index: 1000"
     replaceSelectMenus(modalSellWindow, user.paymentMethods);
     showContractorsData(modalSellWindow);
     handleModalSellWindow();
