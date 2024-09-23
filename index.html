@@ -318,17 +318,17 @@
         <div class="modal__content">
           <h2 class="modal__description">Покупка криптовалюты</h2>
           <!-- Не забудьте указать верный action-атрибут -->
-          <form class="modal-buy" method="post">
+          <form class="modal-buy modal-form" method="post" action="https://cryptostar.grading.htmlacademy.pro/">
             <!--
               Обратите внимание, что всем полям для отправки на сервер нужно указать
               атрибуты name (их список вы найдёте в техзадании), а часть полей
               вообще отправляется скрытыми
               -->
             <input type="hidden" name="type" value="BUY" />
-            <input type="hidden" name="contractorId" />
-            <input type="hidden" name="exchangeRate" />
-            <input type="hidden" name="sendingCurrency" />
-            <input type="hidden" name="receivingCurrency" />
+            <input class="modal-form__contractor-id" type="hidden" name="contractorId" />
+            <input class="modal-form__exchange-rate" type="hidden" name="exchangeRate" />
+            <input class="modal-form__sending-currency" type="hidden" name="sendingCurrency" value="RUB"/>
+            <input class="modal-form__receiving-currency" type="hidden" name="receivingCurrency" value="KEKS"/>
             <div class="transaction-info">
               <p class="transaction-info__item transaction-info__item--name">
                 <span class="transaction-info__label">Пользователь</span>
@@ -354,10 +354,9 @@
                   <label>
                     <span class="custom-input__label">Оплата</span><span class="custom-input__unit">₽</span>
                     <button class="btn btn--textblue custom-input__btn custom-input__btn--exchange-currency" type="button">обменять все</button>
-                    <input class="custom-input__payment" type="number" value="" placeholder="0" />
+                    <input class="custom-input__payment" name="sendingAmount" type="number" value="" placeholder="0" />
                   </label>
-                  <!-- Пример стилизации ошибки валидации -->
-                  <div class="custom-input__error">Минимальная сумма — 9 999 999 ₽</div>
+                  <div class="custom-input__error"></div>
                 </div>
               </div>
               <svg class="modal__container-svg" width="14" height="12" aria-hidden="true">
@@ -367,7 +366,7 @@
                 <div class="custom-input">
                   <label>
                     <span class="custom-input__label">Зачисление</span><span class="custom-input__unit">KEKS</span>
-                    <input class="custom-input__enrollment" type="number" placeholder="0" />
+                    <input class="custom-input__enrollment" name="receivingAmount" type="number" placeholder="0" />
                   </label>
                 </div>
               </div>
@@ -381,7 +380,7 @@
                     которые есть у пользователя. Способ - удалить из разметки или добавить disable-атрибут
                     остаётся на ваше усмотрение. Первый пункт, с предложением выбора, должен быть всегда
                     -->
-                  <select class="select-menu">
+                  <select class="select-menu" name="paymentMethod">
                     <option selected disabled>Выберите платёжную систему</option>
                     <option>CryptoEx</option>
                     <option>Первый криптобанк</option>
@@ -411,7 +410,7 @@
                 <div class="custom-input">
                   <label>
                     <span class="custom-input__label">Платёжный пароль</span>
-                    <input class="custom-input__password" type="password" value="123456" placeholder="Введите пароль" />
+                    <input class="custom-input__password" name="paymentPassword" type="password" value="180712" placeholder="Введите пароль" />
                   </label>
                 </div>
               </div>
@@ -454,17 +453,17 @@
         <div class="modal__content">
           <h2 class="modal__description">Продажа криптовалюты</h2>
           <!-- Не забудьте указать верный action-атрибут -->
-          <form class="modal-sell" method="post">
+          <form class="modal-sell modal-form" method="post" action="https://cryptostar.grading.htmlacademy.pro/">
             <!--
               Обратите внимание, что всем полям для отправки на сервер нужно указать
               атрибуты name (их список вы найдёте в техзадании), а часть полей
               вообще отправляется скрытыми
               -->
             <input type="hidden" name="type" value="SELL" />
-            <input type="hidden" name="contractorId" />
-            <input type="hidden" name="exchangeRate" />
-            <input type="hidden" name="sendingCurrency" />
-            <input type="hidden" name="receivingCurrency" />
+            <input class="modal-form__contractor-id" type="hidden" name="contractorId" />
+            <input class="modal-form__exchange-rate" type="hidden" name="exchangeRate" />
+            <input class="modal-form__sending-currency" type="hidden" name="sendingCurrency" value="KEKS"/>
+            <input class="modal-form__receiving-currency" type="hidden" name="receivingCurrency" value="RUB"/>
             <div class="transaction-info">
               <p class="transaction-info__item transaction-info__item--name">
                 <span class="transaction-info__label">Пользователь</span>
@@ -491,9 +490,9 @@
                     <span class="custom-input__label">Оплата</span>
                     <span class="custom-input__unit">KEKS</span>
                     <button class="btn btn--textblue custom-input__btn custom-input__btn--exchange-crypto" type="button">обменять все</button>
-                    <input class="custom-input__payment" type="number" value="" placeholder="0" />
+                    <input class="custom-input__payment" name="sendingAmount" type="number" value="" placeholder="0" />
                   </label>
-                  <div class="custom-input__error">Минимальная сумма — 9 999 999 ₽</div>
+                  <div class="custom-input__error"></div>
                 </div>
               </div>
               <svg class="modal__container-svg" width="14" height="12" aria-hidden="true">
@@ -504,7 +503,7 @@
                   <label>
                     <span class="custom-input__label">Зачисление</span><span class="custom-input__unit">₽</span>
                     <button class="btn btn--textblue custom-input__btn custom-input__btn--exchange-currency" type="button">обменять все</button>
-                    <input class="custom-input__enrollment" type="number" value="" placeholder="0" />
+                    <input class="custom-input__enrollment" name="receivingAmount" type="number" value="" placeholder="0" />
                   </label>
                 </div>
               </div>
@@ -526,7 +525,7 @@
                     которые есть у пользователя. Способ - удалить из разметки или добавить disable-атрибут
                     остаётся на ваше усмотрение. Первый пункт, с предложением выбора, должен быть всегда
                     -->
-                  <select class="select-menu">
+                  <select class="select-menu" name="paymentMethod">
                     <option selected disabled>Выберите платёжную систему</option>
                     <option>CryptoEx</option>
                     <option>Первый криптобанк</option>
@@ -548,7 +547,7 @@
                 <div class="custom-input">
                   <label>
                     <span class="custom-input__label">Платёжный пароль</span>
-                    <input class="custom-input__password" type="password" placeholder="Введите пароль" />
+                    <input class="custom-input__password" name="paymentPassword" type="password" value="180712" placeholder="Введите пароль" />
                   </label>
                 </div>
               </div>

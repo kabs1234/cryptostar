@@ -1,3 +1,4 @@
+import { SERVER_MAIN_LINK } from './constants.js';
 import { createPaymentMethodsSelectMenu, hideElement } from './utils.js';
 
 export const modalBuyWindow = document.querySelector('.modal--buy');
@@ -5,13 +6,15 @@ export const modalSellWindow = document.querySelector('.modal--sell');
 const buyModalCloseButton = document.querySelector('.modal__close-btn--buy');
 const sellModalCloseButton = document.querySelector('.modal__close-btn--sell');
 const modalWindowMessages = document.querySelectorAll('.modal__validation-message');
-let activeModalWindow;
 
+let activeModalWindow;
 let exchangeBuyButtons;
 let modalWindowOverlay;
 let exchangeSellButtons;
 let contractor;
 let user;
+let isSellFormSet = false;
+let isBuyFormSet = false;
 
 const callFunctionOnActiveModal = (evt, activeModal, cb) => {
   if (activeModal === 'buy') {
@@ -47,6 +50,9 @@ const resetModalForm = (modalWindow) => {
 
 const observer = new MutationObserver((mutations) => {
   mutations.forEach((mutation) => {
+    modalWindowOverlay = mutation.target.querySelector('.modal__overlay');
+
+
     if (mutation.target === modalBuyWindow) {
       activeModalWindow = 'buy';
     } else if (mutation.target === modalSellWindow) {
@@ -67,13 +73,15 @@ const observer = new MutationObserver((mutations) => {
 });
 
 
-const showContractorsData = (modalWindow) => {
+const placeContractorsData = (modalWindow) => {
   const userName = modalWindow.querySelector('.transaction-info__username');
   const exchangeRate = modalWindow.querySelector('.transaction-info__item--exchangerate .transaction-info__data');
   const cashLimit = modalWindow.querySelector('.transaction-info__item--cashlimit .transaction-info__data');
   const verifiedIcon = modalWindow.querySelector('.transaction-info__verified-icon');
-  const minCashLimit = modalWindow === modalBuyWindow ? contractor.minAmount * contractor.exchangeRate.toFixed(2) : contractor.minAmount;
-  const maxCashLimitNumber = modalWindow === modalBuyWindow ? (contractor.balance.amount * contractor.exchangeRate).toFixed(2) : contractor.balance.amount;
+  const cryptoWalletInput = modalWindow.querySelector('.custom-input__crypto-wallet');
+  const minCashLimit = modalWindow === modalBuyWindow ? contractor.minAmount * contractor.exchangeRate : contractor.minAmount;
+  const maxCashLimitNumber = modalWindow === modalBuyWindow ? (contractor.balance.amount * contractor.exchangeRate) : contractor.balance.amount;
+
 
   if (contractor.isVerified) {
     verifiedIcon.removeAttribute('style');
@@ -81,75 +89,60 @@ const showContractorsData = (modalWindow) => {
     hideElement(verifiedIcon);
   }
 
+  cryptoWalletInput.value = modalWindow === modalBuyWindow ? user.wallet.address : contractor.wallet.address;
   userName.textContent = contractor.userName;
   exchangeRate.textContent = `${contractor.exchangeRate} ₽`;
   cashLimit.textContent = `${minCashLimit} ₽ - ${maxCashLimitNumber} ₽`;
 };
 
 const checkSellCryptoConverting = (crypto) => {
-  const convertedCryptoToCurrency = crypto * contractor.exchangeRate;
+  const convertedCryptoToCurrency = +crypto * contractor.exchangeRate;
 
-  if ( convertedCryptoToCurrency > contractor.minAmount && convertedCryptoToCurrency < contractor.balance.amount && crypto < user.balances[1].amount) {
-    console.log(true);
-  } else {
-    console.log(false);
-  }
+  return convertedCryptoToCurrency >= contractor.minAmount && convertedCryptoToCurrency <= contractor.balance.amount && crypto <= user.balances[1].amount;
 };
 
 const checkSellCurrencyConverting = (currency) => {
-  const convertedCurrencyToCrypto = currency / contractor.exchangeRate;
+  const convertedCurrencyToCrypto = +currency / contractor.exchangeRate;
 
-  if ( currency > contractor.minAmount && currency < contractor.balance.amount && convertedCurrencyToCrypto < user.balances[1].amount) {
-    console.log(true);
-  } else {
-    console.log(false);
-  }
+  return currency >= contractor.minAmount && currency <= contractor.balance.amount && convertedCurrencyToCrypto <= user.balances[1].amount;
 };
 
 const checkBuyCurrencyConverting = (currency) => {
   const minCashLimit = contractor.minAmount * contractor.exchangeRate;
   const maxCashLimit = contractor.balance.amount * contractor.exchangeRate;
 
-  if ( currency > minCashLimit && currency < maxCashLimit) {
-    console.log(true);
-  } else {
-    console.log(false);
-  }
+  return +currency >= minCashLimit && +currency <= maxCashLimit;
 };
 
 const checkBuyCryptoConverting = (crypto) => {
-  const convertedCryptoToCurrency = crypto * contractor.exchangeRate;
+  const convertedCryptoToCurrency = +crypto * contractor.exchangeRate;
   const minCashLimit = contractor.minAmount * contractor.exchangeRate;
   const maxCashLimit = contractor.balance.amount * contractor.exchangeRate;
 
-  if ( convertedCryptoToCurrency > minCashLimit && convertedCryptoToCurrency < maxCashLimit) {
-    console.log(true);
-  } else {
-    console.log(false);
-  }
+  return convertedCryptoToCurrency >= minCashLimit && convertedCryptoToCurrency <= maxCashLimit;
 };
 
-const checkPassword = (password) => console.log(password === '180712');
+const checkPassword = (password) => password === '180712';
 
 const convertCurrencyToCrypto = (evt, enrollmentElement) => {
-  enrollmentElement.value = (+evt.target.value / contractor.exchangeRate).toFixed(2);
+  enrollmentElement.value = (+evt.target.value / contractor.exchangeRate);
 };
 
 const convertCryptoToCurrency = (evt, paymentElement) => {
-  paymentElement.value = (+evt.target.value * contractor.exchangeRate).toFixed(2);
+  paymentElement.value = (+evt.target.value * contractor.exchangeRate);
 };
 
 const exchangeAllCrypto = () => {
   const exchangedCryptoToCurrency = user.balances[1].amount * contractor.exchangeRate;
 
-  return exchangedCryptoToCurrency.toFixed(2);
+  return exchangedCryptoToCurrency;
 };
 
 const exchangeAllCurrency = () => {
   const maxCashLimit = contractor.balance.amount;
   const exchangedCurrencyToCrypto = maxCashLimit / contractor.exchangeRate;
 
-  return exchangedCurrencyToCrypto.toFixed(2);
+  return exchangedCurrencyToCrypto;
 };
 
 const changeInputValue = (inputElement, customValue) => {
@@ -160,7 +153,7 @@ const placeCardNumber = (evt, paymentMethods) => {
   const selectedPaymentMethodData = paymentMethods.filter((paymentMethod) => paymentMethod.provider === evt.target.value);
   const userCardNumber = selectedPaymentMethodData[0].accountNumber;
 
-  return userCardNumber ?? '';
+  return userCardNumber ? userCardNumber : '';
 };
 
 const replaceSelectMenus = (modalWindow, paymentMethods) => {
@@ -170,57 +163,70 @@ const replaceSelectMenus = (modalWindow, paymentMethods) => {
   const newPaymentSystemsSelect = createPaymentMethodsSelectMenu(paymentMethods);
 
   selectMenuWrapper.replaceChild(newPaymentSystemsSelect, paymentSystemsSelectMenu);
-  newPaymentSystemsSelect.addEventListener('change', (evt) => cardNumberInput.value = placeCardNumber(evt, paymentMethods));
-};
-
-const handleModalSellWindow = () => {
-  const paymentInput = modalSellWindow.querySelector('.custom-input__payment');
-  const enrollmentInput = modalSellWindow.querySelector('.custom-input__enrollment');
-  const exchangeAllCryptoButton = modalSellWindow.querySelector('.custom-input__btn--exchange-crypto');
-  const exchangeAllCurrencyButton = modalSellWindow.querySelector('.custom-input__btn--exchange-currency');
-  const cryptoWalletInput = modalSellWindow.querySelector('.custom-input__crypto-wallet');
-  const passwordInput = modalSellWindow.querySelector('.custom-input__password');
-  const modalForm = modalSellWindow.querySelector('form');
-  const pristineForm = new Pristine(modalForm);
-
-
-  cryptoWalletInput.value = contractor.wallet.address;
-  pristineForm.addValidator(paymentInput, checkSellCryptoConverting, 'check');
-  pristineForm.addValidator(enrollmentInput, checkSellCurrencyConverting, 'check');
-  pristineForm.addValidator(passwordInput, checkPassword, 'check')
-
-  paymentInput.addEventListener('input', (evt) => convertCryptoToCurrency(evt, enrollmentInput));
-  enrollmentInput.addEventListener('input', (evt) => convertCurrencyToCrypto(evt, paymentInput));
-  exchangeAllCryptoButton.addEventListener('click', () => {
-    changeInputValue(paymentInput, user.balances[1].amount);
-    changeInputValue(enrollmentInput, exchangeAllCrypto(user, contractor));
-  });
-  exchangeAllCurrencyButton.addEventListener('click', () => {
-    changeInputValue(enrollmentInput, contractor.balance.amount);
-    changeInputValue(paymentInput, exchangeAllCurrency(contractor));
+  newPaymentSystemsSelect.addEventListener('change', (evt) => {
+    cardNumberInput.value = placeCardNumber(evt, paymentMethods);
   });
 };
 
-const handleModalBuyWindow = () => {
-  const paymentInput = modalBuyWindow.querySelector('.custom-input__payment');
-  const enrollmentInput = modalBuyWindow.querySelector('.custom-input__enrollment');
-  const exchangeAllCurrencyButton = modalBuyWindow.querySelector('.custom-input__btn--exchange-currency');
-  const cryptoWalletInput = modalBuyWindow.querySelector('.custom-input__crypto-wallet');
-  const passwordInput = modalBuyWindow.querySelector('.custom-input__password');
-  const modalForm = modalBuyWindow.querySelector('form');
+const sendFormData = async (form) => {
+  fetch(SERVER_MAIN_LINK, {
+    body: new FormData(form),
+    method: 'post',
+  });
+};
+
+const setModalForm = (modalWindow) => {
+  const paymentInput = modalWindow.querySelector('.custom-input__payment');
+  const enrollmentInput = modalWindow.querySelector('.custom-input__enrollment');
+  const exchangeAllCurrencyButton = modalWindow.querySelector('.custom-input__btn--exchange-currency');
+  const passwordInput = modalWindow.querySelector('.custom-input__password');
+  const modalForm = modalWindow.querySelector('form');
   const pristineForm = new Pristine(modalForm);
 
-  cryptoWalletInput.value = user.wallet.address;
-  pristineForm.addValidator(passwordInput, checkPassword, 'check')
-  pristineForm.addValidator(paymentInput, checkBuyCurrencyConverting, 'check');
-  pristineForm.addValidator(enrollmentInput, checkBuyCryptoConverting, 'check');
+  if (modalWindow === modalBuyWindow) {
+    pristineForm.addValidator(paymentInput, checkBuyCurrencyConverting, 'Введенная сумма должна быть в диапозоне лимита');
+    pristineForm.addValidator(enrollmentInput, checkBuyCryptoConverting, 'check');
 
-  paymentInput.addEventListener('input', (evt) => convertCurrencyToCrypto(evt, enrollmentInput));
-  enrollmentInput.addEventListener('input', (evt) => convertCryptoToCurrency(evt, paymentInput));
+    paymentInput.addEventListener('input', (evt) => convertCurrencyToCrypto(evt, enrollmentInput));
+    enrollmentInput.addEventListener('input', (evt) => convertCryptoToCurrency(evt, paymentInput));
 
-  exchangeAllCurrencyButton.addEventListener('click', () => {
-    changeInputValue(paymentInput, user.balances[0].amount);
-    changeInputValue(enrollmentInput, exchangeAllCrypto(user, contractor));
+    exchangeAllCurrencyButton.addEventListener('click', () => {
+      changeInputValue(paymentInput, user.balances[0].amount);
+      changeInputValue(enrollmentInput, exchangeAllCrypto(user, contractor));
+    });
+  } else if (modalWindow === modalSellWindow) {
+    const exchangeAllCryptoButton = modalSellWindow.querySelector('.custom-input__btn--exchange-crypto');
+
+    pristineForm.addValidator(paymentInput, checkSellCryptoConverting, 'check');
+    pristineForm.addValidator(enrollmentInput, checkSellCurrencyConverting, 'check');
+
+    paymentInput.addEventListener('input', (evt) => convertCryptoToCurrency(evt, enrollmentInput));
+    enrollmentInput.addEventListener('input', (evt) => convertCurrencyToCrypto(evt, paymentInput));
+    exchangeAllCryptoButton.addEventListener('click', () => {
+      changeInputValue(paymentInput, user.balances[1].amount);
+      changeInputValue(enrollmentInput, exchangeAllCrypto(user, contractor));
+    });
+    exchangeAllCurrencyButton.addEventListener('click', () => {
+      changeInputValue(enrollmentInput, contractor.balance.amount);
+      changeInputValue(paymentInput, exchangeAllCurrency(contractor));
+    });
+  }
+
+  pristineForm.addValidator(passwordInput, checkPassword, 'check');
+
+  modalForm.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    if (pristineForm.validate()) {
+      const contractorId = modalWindow.querySelector('.modal-form__contractor-id');
+      const exchangeRate = modalWindow.querySelector('.modal-form__exchange-rate');
+
+      contractorId.value = contractor.id;
+      exchangeRate.value = contractor.exchangeRate;
+
+      sendFormData(modalForm);
+    } else {
+      console.log(2);
+    }
   });
 };
 
@@ -230,18 +236,25 @@ export const showModalWindow = (allContractorsData, contractorExchangeButton, us
   user = userData;
 
   if (contractor.status === 'seller') {
-    modalWindowOverlay = modalBuyWindow.querySelector('.modal__overlay');
-    modalBuyWindow.style = "z-index: 1000"
+    modalBuyWindow.style = 'z-index: 1000;';
     replaceSelectMenus(modalBuyWindow, contractor.paymentMethods);
-    showContractorsData(modalBuyWindow);
-    handleModalBuyWindow();
+    placeContractorsData(modalBuyWindow);
+
+    if (!isBuyFormSet) {
+      setModalForm(modalBuyWindow);
+      isBuyFormSet = true;
+    }
   } else if (contractor.status === 'buyer') {
-    modalWindowOverlay = modalSellWindow.querySelector('.modal__overlay');
-    modalSellWindow.style = "z-index: 1000"
+    modalSellWindow.style = 'z-index: 1000;';
     replaceSelectMenus(modalSellWindow, user.paymentMethods);
-    showContractorsData(modalSellWindow);
-    handleModalSellWindow();
+    placeContractorsData(modalSellWindow);
+
+    if (!isSellFormSet) {
+      setModalForm(modalSellWindow);
+      isSellFormSet = true;
+    }
   }
+
 };
 
 export const giveButtonsEventListener = (buttonsType, cb) => {

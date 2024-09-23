@@ -1,6 +1,7 @@
 import { createPaymentMethodsList, hideElement } from './utils.js';
 import { initiateMap, replaceContractorMarkers } from './users-map.js';
 import { giveButtonsEventListener, showModalWindow } from './modal.js';
+import { SERVER_CONTRACTORS_LINK, SERVER_USER_LINK } from './constants.js';
 
 const contractorsContainer = document.querySelector('.users-list');
 const contractorsListTable = contractorsContainer.querySelector('.users-list__table-body');
@@ -22,12 +23,12 @@ let currentRenderedList;
 let savedUserData;
 
 const getContractorsData = async () => {
-  const contractorsData = await fetch('https://cryptostar.grading.htmlacademy.pro/contractors');
+  const contractorsData = await fetch(SERVER_CONTRACTORS_LINK);
   return contractorsData.json();
 };
 
 const getUserProfile = async () => {
-  const userProfile = await fetch('https://cryptostar.grading.htmlacademy.pro/user');
+  const userProfile = await fetch(SERVER_USER_LINK);
   return userProfile.json();
 };
 
@@ -121,10 +122,10 @@ getContractorsData().then((contractorsData) => {
   sellersList = contractorsData.filter((element) => element.status === 'seller');
 
 
+  isVerifiedCheckbox.disabled = false;
   renderContractorsTableList(sellersList, 'seller');
   giveButtonsEventListener('sell', (evt) => showModalWindow(sellersList, evt.target, savedUserData));
   currentRenderedList = [...sellersList];
-  isVerifiedCheckbox.disabled = false;
 
   buyListControlButton.addEventListener('click', () => {
     removeIsActiveClass(sellListControlButton);

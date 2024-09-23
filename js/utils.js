@@ -11,10 +11,10 @@ export const createPaymentMethodsList = (listClass, paymentMethods) => {
 export const createPaymentMethodsSelectMenu = (paymentMethods) => {
   const domParser = new DOMParser();
 
-  const paymentMethodsOptionsStrings = paymentMethods.map((element) => `<option data-payment-method="${element.provider}">${element.provider}</option>`);
+  const paymentMethodsOptionsStrings = paymentMethods.map((element) => `<option value="${element.provider}" data-payment-method="${element.provider}">${element.provider}</option>`);
   const paymentMethodsSelectMenu = `
-    <select class="select-menu">
-      <option selected="" disabled="">Выберите платёжную систему</option>
+    <select class="select-menu" name="paymentMethod">
+      <option selected disabled>Выберите платёжную систему</option>
       ${paymentMethodsOptionsStrings.join('\n')}
     </select>
   `;
