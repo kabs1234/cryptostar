@@ -1,5 +1,5 @@
-import { SERVER_MAIN_LINK } from './constants.js';
-import { createPaymentMethodsSelectMenu, hideElement } from './utils.js';
+import { sendFormData } from './requests.js';
+import { createPaymentMethodsSelectMenu, hideElement, changeInputValue } from './utils.js';
 
 export const modalBuyWindow = document.querySelector('.modal--buy');
 export const modalSellWindow = document.querySelector('.modal--sell');
@@ -166,10 +166,6 @@ const exchangeAllCurrency = () => {
   return exchangedCurrencyToCrypto;
 };
 
-const changeInputValue = (inputElement, customValue) => {
-  inputElement.value = customValue;
-};
-
 const placeCardNumber = (evt, paymentMethods) => {
   const selectedPaymentMethodData = paymentMethods.filter((paymentMethod) => paymentMethod.provider === evt.target.value);
   const userCardNumber = selectedPaymentMethodData[0].accountNumber;
@@ -188,11 +184,6 @@ const replaceSelectMenus = (modalWindow, paymentMethods) => {
     cardNumberInput.value = placeCardNumber(evt, paymentMethods);
   });
 };
-
-const sendFormData = async (form) => fetch(SERVER_MAIN_LINK, {
-  body: new FormData(form),
-  method: 'post',
-});
 
 const isEmpty = (element) => element !== 'Выберите платёжную систему';
 

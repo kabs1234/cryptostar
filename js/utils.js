@@ -39,3 +39,59 @@ export const addIsActiveClass = (element) => {
 export const clearInnerHtml = (element) => {
   element.innerHTML = '';
 };
+
+export const changeInputValue = (inputElement, customValue) => {
+  inputElement.value = customValue;
+};
+
+export const createElementFromString = (string) => {
+  const domParser = new DOMParser();
+
+  const parsedString = domParser.parseFromString(string, 'text/html');
+  return parsedString.body.firstChild;
+};
+
+export const showServerError = () => {
+  const documentMainElement = document.querySelector('main');
+  const serverErrorString = `
+    <div class="container">
+      <div class="message"><span class="message__icon">
+          <svg width="60" height="60" aria-hidden="true">
+            <use xlink:href="#icon-server-error"></use>
+          </svg></span>
+        <p class="message__paragraph">Сервер временно недоступен, попробуйте
+          <a class="link">обновить страницу</a>
+        </p>
+      </div>
+    </div>`;
+  const headingElement = document.createElement('h1');
+  const errorElement = createElementFromString(serverErrorString);
+  const refreshPageLink = errorElement.querySelector('.link');
+
+  clearInnerHtml(documentMainElement);
+  headingElement.classList.add('visually-hidden');
+  headingElement.textContent = 'Пользователи биржи';
+
+  documentMainElement.append(headingElement);
+  documentMainElement.append(errorElement);
+
+  refreshPageLink.addEventListener('click', () => location.reload());
+};
+
+export const showNoResultError = () => {
+  const documentMainElement = document.querySelector('main');
+  const noResultsString = `
+  <div class="container container--lightbackground">
+    <div class="message message--noresults"><span class="message__icon">
+        <svg width="60" height="60" aria-hidden="true">
+          <use xlink:href="#icon-no-results"></use>
+        </svg></span>
+      <p class="message__paragraph">Нет подходящих объявлений
+        <a class="link"></a>
+      </p>
+    </div>
+  </div>`;
+  const errorElement = createElementFromString(noResultsString);
+
+  documentMainElement.append(errorElement);
+};
