@@ -1,4 +1,4 @@
-import { createPaymentMethodsList, hideElement } from './utils.js';
+import { createPaymentMethodsList, hideElement, removeIsActiveClass, addIsActiveClass, clearInnerHtml } from './utils.js';
 import { initiateMap, replaceContractorMarkers } from './users-map.js';
 import { giveButtonsEventListener, showModalWindow } from './modal.js';
 import { SERVER_CONTRACTORS_LINK, SERVER_USER_LINK } from './constants.js';
@@ -30,10 +30,6 @@ const getContractorsData = async () => {
 const getUserProfile = async () => {
   const userProfile = await fetch(SERVER_USER_LINK);
   return userProfile.json();
-};
-
-const clearContractorsTable = () => {
-  contractorsListTable.innerHTML = '';
 };
 
 export const renderContractorTableRow = (contractor) => {
@@ -69,20 +65,12 @@ export const renderContractorTableRow = (contractor) => {
 };
 
 const renderContractorsTableList = (contractorsList) => {
-  clearContractorsTable();
+  clearInnerHtml(contractorsListTable);
 
   contractorsList.forEach((value) => {
     const renderedUser = renderContractorTableRow(value);
     contractorsListTable.append(renderedUser);
   });
-};
-
-const removeIsActiveClass = (element) => {
-  element.classList.remove('is-active');
-};
-
-const addIsActiveClass = (element) => {
-  element.classList.add('is-active');
 };
 
 const renderOnlyVerifiedUsers = () => {

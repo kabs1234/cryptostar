@@ -13,7 +13,7 @@ export const createPaymentMethodsSelectMenu = (paymentMethods) => {
 
   const paymentMethodsOptionsStrings = paymentMethods.map((element) => `<option value="${element.provider}" data-payment-method="${element.provider}">${element.provider}</option>`);
   const paymentMethodsSelectMenu = `
-    <select class="select-menu" name="paymentMethod">
+    <select class="select-menu" name="paymentMethod" required>
       <option selected disabled>Выберите платёжную систему</option>
       ${paymentMethodsOptionsStrings.join('\n')}
     </select>
@@ -28,3 +28,14 @@ export const hideElement = (element) => {
   element.style = 'display: none;';
 };
 
+export const removeIsActiveClass = (element) => {
+  element.classList.remove('is-active');
+};
+
+export const addIsActiveClass = (element) => {
+  element.classList.add('is-active');
+};
+
+export const clearInnerHtml = (element) => {
+  element.innerHTML = '';
+};

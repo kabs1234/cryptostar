@@ -64,6 +64,12 @@ export const replaceContractorMarkers = (replacingContactors) => {
   addContractorsMarkers(replacingContactors);
 };
 
+const exchangeButtonHandler = function (evt) {
+  if (evt.popup) {
+    const exchangeButton = evt.popup._wrapper.querySelector('.exchange-btn--seller');
+    exchangeButton.addEventListener('click', (event) => showModalWindow(savedContractorsData, event.target, savedUserData));
+  }
+};
 
 export const initiateMap = (contractorsData, userData) => {
   savedContractorsData = [...contractorsData];
@@ -78,9 +84,7 @@ export const initiateMap = (contractorsData, userData) => {
   addContractorsMarkers(savedContractorsData);
 };
 
-map.addEventListener('popupopen', () => {
-  const sellButton = mapWrapper.querySelector('.exchange-btn--seller');
-  console.log(sellButton);
 
-  sellButton.addEventListener('click', (evt) => showModalWindow(savedContractorsData, evt.target, savedUserData));
-});
+map.addEventListener('popupopen', exchangeButtonHandler);
+
+
