@@ -44,7 +44,15 @@ const renderContractorPopup = (contractor) => {
 };
 
 const addContractorMarker = (contractorData) => {
-  const contractorMarker = L.marker([contractorData.coords.lat, contractorData.coords.lng]);
+  const markerIcon = L.icon({
+    iconUrl: contractorData.isVerified ? '../img/pin-verified.svg' : '../img/pin.svg',
+
+    iconSize: [36, 46],
+    iconAnchor: [18, 46],
+    popupAnchor: [0, -46],
+  });
+
+  const contractorMarker = L.marker([contractorData.coords.lat, contractorData.coords.lng], {icon: markerIcon});
   const contractorPopup = renderContractorPopup(contractorData);
   contractorMarker.bindPopup(contractorPopup).openPopup();
   contractorsLayer.addLayer(contractorMarker);
