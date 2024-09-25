@@ -1,4 +1,4 @@
-import { sendFormData } from './requests.js';
+import { sendFormData } from './api.js';
 import { createPaymentMethodsSelectMenu, hideElement, changeInputValue } from './utils.js';
 
 export const modalBuyWindow = document.querySelector('.modal--buy');
@@ -7,13 +7,10 @@ const buyModalCloseButton = document.querySelector('.modal__close-btn--buy');
 const sellModalCloseButton = document.querySelector('.modal__close-btn--sell');
 const modalWindowMessages = document.querySelectorAll('.modal__validation-message');
 const pristineConfig = {
-  // class of the parent element where the error/success class is added
   classTo: 'modal__input-wrapper',
   errorClass: 'has-danger',
   successClass: 'has-success',
-  // class of the parent element where error text element is appended
   errorTextParent: 'modal__input-wrapper',
-  // type of element to create for the error text
   errorTextTag: 'p',
   errorTextClass: 'custom__input-error'
 };
@@ -24,8 +21,6 @@ let modalWindowOverlay;
 let exchangeSellButtons;
 let contractor;
 let user;
-let isSellFormSet = false;
-let isBuyFormSet = false;
 
 const callFunctionOnActiveModal = (evt, activeModal, cb) => {
   if (activeModal === 'buy') {
@@ -100,8 +95,8 @@ const placeContractorsData = (modalWindow) => {
   const cashLimit = modalWindow.querySelector('.transaction-info__item--cashlimit .transaction-info__data');
   const verifiedIcon = modalWindow.querySelector('.transaction-info__verified-icon');
   const cryptoWalletInput = modalWindow.querySelector('.custom-input__crypto-wallet');
-  const minCashLimit = modalWindow === modalBuyWindow ? contractor.minAmount * contractor.exchangeRate : contractor.minAmount;
-  const maxCashLimitNumber = modalWindow === modalBuyWindow ? (contractor.balance.amount * contractor.exchangeRate) : contractor.balance.amount;
+  const minCashLimit = modalWindow === modalBuyWindow ? +(contractor.minAmount * contractor.exchangeRate).toFixed(2) : contractor.minAmount;
+  const maxCashLimitNumber = modalWindow === modalBuyWindow ? +(contractor.balance.amount * contractor.exchangeRate).toFixed(2) : contractor.balance.amount;
 
 
   if (contractor.isVerified) {
@@ -145,13 +140,9 @@ const checkBuyCryptoConverting = (crypto) => {
 
 const checkPassword = (password) => password === '180712';
 
-const convertCurrencyToCrypto = (evt, enrollmentElement) => {
-  enrollmentElement.value = (+evt.target.value / contractor.exchangeRate);
-};
+const convertCurrencyToCrypto = (currency) => (+currency / contractor.exchangeRate);
 
-const convertCryptoToCurrency = (evt, paymentElement) => {
-  paymentElement.value = (+evt.target.value * contractor.exchangeRate);
-};
+const convertCryptoToCurrency = (crypto) => (+crypto * contractor.exchangeRate);
 
 const exchangeAllCrypto = () => {
   const exchangedCryptoToCurrency = user.balances[1].amount * contractor.exchangeRate;
@@ -167,8 +158,8 @@ const exchangeAllCurrency = () => {
 };
 
 const placeCardNumber = (evt, paymentMethods) => {
-  const selectedPaymentMethodData = paymentMethods.filter((paymentMethod) => paymentMethod.provider === evt.target.value);
-  const userCardNumber = selectedPaymentMethodData[0].accountNumber;
+  const selectedPaymentMethodData = paymentMethods.find((paymentMethod) => paymentMethod.provider === evt.target.value);
+  const userCardNumber = selectedPaymentMethodData.accountNumber;
 
   return userCardNumber ? userCardNumber : '';
 };
@@ -185,28 +176,45 @@ const replaceSelectMenus = (modalWindow, paymentMethods) => {
   });
 };
 
-const isEmpty = (element) => element !== 'Выберите платёжную систему';
+const hideMessageElements = (modalWindow) => {
+  const currentModalMessages = modalWindow.querySelectorAll('.modal__validation-message');
+  currentModalMessages.forEach((element) => hideElement(element));
+};
+
+const checkPaymentMethod = (element) => element !== 'Выберите платёжную систему';
 
 const setModalForm = (modalWindow) => {
   const paymentInput = modalWindow.querySelector('.custom-input__payment');
   const enrollmentInput = modalWindow.querySelector('.custom-input__enrollment');
+  const hiddenReceivingAmountInput = modalWindow.querySelector('.modal-form__receiving-amount');
+  const hiddenSendingAmountInput = modalWindow.querySelector('.modal-form__sending-amount');
   const exchangeAllCurrencyButton = modalWindow.querySelector('.custom-input__btn--exchange-currency');
   const passwordInput = modalWindow.querySelector('.custom-input__password');
   const paymentMethodMenu = modalWindow.querySelector('.select-menu');
   const modalForm = modalWindow.querySelector('form');
+  const modalFormSubmitButton = modalWindow.querySelector('.modal__submit');
   const pristineForm = new Pristine(modalForm, pristineConfig);
-
 
   if (modalWindow === modalBuyWindow) {
     pristineForm.addValidator(paymentInput, checkBuyCurrencyConverting, 'Введенная сумма должна быть в диапозоне лимита');
     pristineForm.addValidator(enrollmentInput, checkBuyCryptoConverting, 'Введенная криптовалюта должна быть в диапозоне лимита');
 
-    paymentInput.addEventListener('input', (evt) => convertCurrencyToCrypto(evt, enrollmentInput));
-    enrollmentInput.addEventListener('input', (evt) => convertCryptoToCurrency(evt, paymentInput));
+    paymentInput.addEventListener('input', (evt) => {
+      changeInputValue(enrollmentInput, +convertCurrencyToCrypto(evt.target.value).toFixed(5));
+      changeInputValue(hiddenReceivingAmountInput, convertCurrencyToCrypto(evt.target.value));
+      changeInputValue(hiddenSendingAmountInput, convertCryptoToCurrency(enrollmentInput.value));
+    });
+    enrollmentInput.addEventListener('input', (evt) => {
+      changeInputValue(paymentInput, +convertCryptoToCurrency(evt.target.value).toFixed(5));
+      changeInputValue(hiddenSendingAmountInput, convertCryptoToCurrency(evt.target.value));
+      changeInputValue(hiddenReceivingAmountInput, convertCurrencyToCrypto(paymentInput.value));
+    });
 
     exchangeAllCurrencyButton.addEventListener('click', () => {
       changeInputValue(paymentInput, user.balances[0].amount);
+      changeInputValue(hiddenSendingAmountInput, user.balances[0].amount);
       changeInputValue(enrollmentInput, exchangeAllCrypto(user, contractor));
+      changeInputValue(hiddenReceivingAmountInput, exchangeAllCrypto(user, contractor));
     });
   } else if (modalWindow === modalSellWindow) {
     const exchangeAllCryptoButton = modalSellWindow.querySelector('.custom-input__btn--exchange-crypto');
@@ -214,48 +222,62 @@ const setModalForm = (modalWindow) => {
     pristineForm.addValidator(paymentInput, checkSellCryptoConverting, 'Введенная криптовалюта должна быть в диапозоне лимита');
     pristineForm.addValidator(enrollmentInput, checkSellCurrencyConverting, 'Введенная сумма должна быть в диапозоне лимита');
 
-    paymentInput.addEventListener('input', (evt) => convertCryptoToCurrency(evt, enrollmentInput));
-    enrollmentInput.addEventListener('input', (evt) => convertCurrencyToCrypto(evt, paymentInput));
+    paymentInput.addEventListener('input', (evt) => {
+      changeInputValue(enrollmentInput, +convertCryptoToCurrency(evt.target.value).toFixed(5));
+      changeInputValue(hiddenReceivingAmountInput, convertCryptoToCurrency(evt.target.value));
+      changeInputValue(hiddenSendingAmountInput, convertCurrencyToCrypto(enrollmentInput.value));
+    });
+    enrollmentInput.addEventListener('input', (evt) => {
+      changeInputValue(paymentInput, +convertCurrencyToCrypto(evt.target.value).toFixed(5));
+      changeInputValue(hiddenSendingAmountInput, convertCurrencyToCrypto(evt.target.value));
+      changeInputValue(hiddenReceivingAmountInput, convertCryptoToCurrency(paymentInput.value));
+    });
+
     exchangeAllCryptoButton.addEventListener('click', () => {
       changeInputValue(paymentInput, user.balances[1].amount);
+      changeInputValue(hiddenSendingAmountInput, user.balances[1].amount);
       changeInputValue(enrollmentInput, exchangeAllCrypto(user, contractor));
+      changeInputValue(hiddenReceivingAmountInput, exchangeAllCrypto(user, contractor));
     });
+
     exchangeAllCurrencyButton.addEventListener('click', () => {
       changeInputValue(enrollmentInput, contractor.balance.amount);
+      changeInputValue(hiddenReceivingAmountInput, contractor.balance.amount);
       changeInputValue(paymentInput, exchangeAllCurrency(contractor));
+      changeInputValue(hiddenSendingAmountInput, exchangeAllCurrency(contractor));
     });
   }
 
-  pristineForm.addValidator(paymentMethodMenu, isEmpty, 'Плaтёжная система должна быть выбрана');
-  pristineForm.addValidator(passwordInput, checkPassword, 'check');
+  pristineForm.addValidator(paymentMethodMenu, checkPaymentMethod, 'Плaтёжная система должна быть выбрана');
+  pristineForm.addValidator(passwordInput, checkPassword, 'Введите правильный пароль');
 
   modalForm.addEventListener('submit', (evt) => {
     evt.preventDefault();
+
     if (pristineForm.validate()) {
+
       const contractorId = modalWindow.querySelector('.modal-form__contractor-id');
       const exchangeRate = modalWindow.querySelector('.modal-form__exchange-rate');
-      const currectModalMessages = modalWindow.querySelectorAll('.modal__validation-message');
 
-
-      currectModalMessages.forEach((element) => hideElement(element));
       contractorId.value = contractor.id;
       exchangeRate.value = contractor.exchangeRate;
+      modalFormSubmitButton.disabled = true;
 
-      sendFormData(modalForm).then((response) => {
-        if (response.ok) {
-          showSuccessfulMessage(modalWindow);
-        } else {
-          showErrorMessage(modalWindow);
-        }
-      });
-    } else {
-      showErrorMessage(modalWindow);
+      sendFormData(modalForm)
+        .then((response) => {
+          if (response.ok) {
+            showSuccessfulMessage(modalWindow);
+          } else {
+            showErrorMessage(modalWindow);
+          }})
+        .catch(() => showErrorMessage(modalWindow))
+        .finally(() => {modalFormSubmitButton.disabled = false;});
     }
   });
 };
 
 export const showModalWindow = (allContractorsData, contractorExchangeButton, userData) => {
-  const contractorData = allContractorsData.filter((clickedContractor) => clickedContractor.id === contractorExchangeButton.dataset.exchangeButtonId)[0];
+  const contractorData = allContractorsData.find((clickedContractor) => clickedContractor.id === contractorExchangeButton.dataset.exchangeButtonId);
   contractor = contractorData;
   user = userData;
 
@@ -263,20 +285,16 @@ export const showModalWindow = (allContractorsData, contractorExchangeButton, us
     modalBuyWindow.style = 'z-index: 1000;';
     replaceSelectMenus(modalBuyWindow, contractor.paymentMethods);
     placeContractorsData(modalBuyWindow);
+    hideMessageElements(modalBuyWindow);
 
-    if (!isBuyFormSet) {
-      setModalForm(modalBuyWindow);
-      isBuyFormSet = true;
-    }
+    setModalForm(modalBuyWindow);
   } else if (contractor.status === 'buyer') {
     modalSellWindow.style = 'z-index: 1000;';
     replaceSelectMenus(modalSellWindow, user.paymentMethods);
     placeContractorsData(modalSellWindow);
+    hideMessageElements(modalSellWindow);
 
-    if (!isSellFormSet) {
-      setModalForm(modalSellWindow);
-      isSellFormSet = true;
-    }
+    setModalForm(modalSellWindow);
   }
 };
 
@@ -299,11 +317,11 @@ export const deleteEventListenerFromButtons = (buttonsType, cb) => {
 };
 
 buyModalCloseButton.addEventListener('click', () => {
-  modalBuyWindow.style = 'display: none;';
+  hideElement(modalBuyWindow);
 });
 
 sellModalCloseButton.addEventListener('click', () => {
-  modalSellWindow.style = 'display: none;';
+  hideElement(modalSellWindow);
 });
 
 observer.observe(modalBuyWindow, {

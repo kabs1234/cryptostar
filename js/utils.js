@@ -28,12 +28,12 @@ export const hideElement = (element) => {
   element.style = 'display: none;';
 };
 
-export const removeIsActiveClass = (element) => {
-  element.classList.remove('is-active');
+export const removeHtmlClass = (element, htmlClass) => {
+  element.classList.remove(htmlClass);
 };
 
-export const addIsActiveClass = (element) => {
-  element.classList.add('is-active');
+export const addHtmlClass = (element, htmlClass) => {
+  element.classList.add(htmlClass);
 };
 
 export const clearInnerHtml = (element) => {

@@ -12,9 +12,8 @@ let savedUserData;
 const renderContractorPopup = (contractor) => {
   const domParser = new DOMParser();
   const paymentMethodsArray = contractor.paymentMethods.map((element) => element.provider);
-  const minCashLimit = Math.floor(Math.floor(contractor.minAmount) * contractor.exchangeRate);
-  const maxCashLimit = Math.floor(Math.floor(contractor.balance.amount) * contractor.exchangeRate);
-
+  const minCashLimit = +(contractor.minAmount * contractor.exchangeRate).toFixed(2);
+  const maxCashLimit = +(contractor.balance.amount * contractor.exchangeRate).toFixed(2);
 
   const contractorPopup = `
     <div class="user-card">

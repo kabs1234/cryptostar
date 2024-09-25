@@ -329,6 +329,8 @@
             <input class="modal-form__exchange-rate" type="hidden" name="exchangeRate" />
             <input class="modal-form__sending-currency" type="hidden" name="sendingCurrency" value="RUB"/>
             <input class="modal-form__receiving-currency" type="hidden" name="receivingCurrency" value="KEKS"/>
+            <input class="modal-form__sending-amount" type="hidden" name="sendingAmount"/>
+            <input class="modal-form__receiving-amount" type="hidden" name="receivingAmount"/>
             <div class="transaction-info">
               <p class="transaction-info__item transaction-info__item--name">
                 <span class="transaction-info__label">Пользователь</span>
@@ -354,7 +356,7 @@
                   <label>
                     <span class="custom-input__label">Оплата</span><span class="custom-input__unit">₽</span>
                     <button class="btn btn--textblue custom-input__btn custom-input__btn--exchange-currency" type="button">обменять все</button>
-                    <input class="custom-input__payment" name="sendingAmount" type="number" value="" placeholder="0" />
+                    <input class="custom-input__payment" type="number" value="" placeholder="0" />
                   </label>
                   <div class="custom-input__error"></div>
                 </div>
@@ -366,7 +368,7 @@
                 <div class="custom-input">
                   <label>
                     <span class="custom-input__label">Зачисление</span><span class="custom-input__unit">KEKS</span>
-                    <input class="custom-input__enrollment" name="receivingAmount" type="number" placeholder="0" />
+                    <input class="custom-input__enrollment" type="number" placeholder="0" />
                   </label>
                 </div>
               </div>
@@ -464,6 +466,8 @@
             <input class="modal-form__exchange-rate" type="hidden" name="exchangeRate" />
             <input class="modal-form__sending-currency" type="hidden" name="sendingCurrency" value="KEKS"/>
             <input class="modal-form__receiving-currency" type="hidden" name="receivingCurrency" value="RUB"/>
+            <input class="modal-form__sending-amount" type="hidden" name="sendingAmount"/>
+            <input class="modal-form__receiving-amount" type="hidden" name="receivingAmount"/>
             <div class="transaction-info">
               <p class="transaction-info__item transaction-info__item--name">
                 <span class="transaction-info__label">Пользователь</span>
@@ -490,7 +494,7 @@
                     <span class="custom-input__label">Оплата</span>
                     <span class="custom-input__unit">KEKS</span>
                     <button class="btn btn--textblue custom-input__btn custom-input__btn--exchange-crypto" type="button">обменять все</button>
-                    <input class="custom-input__payment" name="sendingAmount" type="number" value="" placeholder="0" />
+                    <input class="custom-input__payment" type="number" value="" placeholder="0" />
                   </label>
                   <div class="custom-input__error"></div>
                 </div>
@@ -503,7 +507,7 @@
                   <label>
                     <span class="custom-input__label">Зачисление</span><span class="custom-input__unit">₽</span>
                     <button class="btn btn--textblue custom-input__btn custom-input__btn--exchange-currency" type="button">обменять все</button>
-                    <input class="custom-input__enrollment" name="receivingAmount" type="number" value="" placeholder="0" />
+                    <input class="custom-input__enrollment" type="number" value="" placeholder="0" />
                   </label>
                 </div>
               </div>
