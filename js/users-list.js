@@ -21,6 +21,7 @@ let buyersList;
 let sellersList;
 let currentRenderedList;
 let savedUserData;
+let checkMapInitialization;
 
 export const renderContractorTableRow = (contractor) => {
   const domParser = new DOMParser();
@@ -145,8 +146,10 @@ getContractorsData().then((contractorsData) => {
       addHtmlClass(viewContractorsByMapButton, 'is-active');
       hideElement(contractorsContainer);
       mapContainer.removeAttribute('style');
-      currentRenderedList = [...sellersList.filter((element) => element.coords)];
-      initiateMap(currentRenderedList, savedUserData);
+      if (!checkMapInitialization) {
+        initiateMap([...currentRenderedList.filter((element) => element.coords)], savedUserData);
+        checkMapInitialization = true;
+      }
       renderOnlyVerifiedUsers();
     });
   } catch (err) {
