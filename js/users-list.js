@@ -12,8 +12,8 @@ const userName = document.querySelector('.user-profile__name span');
 const userCryptoBalance = document.querySelector('#user-crypto-balance');
 const userCurrencyBalance = document.querySelector('#user-fiat-balance');
 
-const buyListControlButton = tabControlButtons[0];
-const sellListControlButton = tabControlButtons[1];
+const buyCryptoListButton = tabControlButtons[0];
+const sellCryptoListButton = tabControlButtons[1];
 const viewContractorsByListButton = tabControlButtons[2];
 const viewContractorsByMapButton = tabControlButtons[3];
 
@@ -25,10 +25,10 @@ let checkMapInitialization;
 
 export const renderContractorTableRow = (contractor) => {
   const domParser = new DOMParser();
-  const exchangeType = contractor.status;
-  const minCashLimit = exchangeType === 'seller' ? +(contractor.minAmount * contractor.exchangeRate).toFixed(2) : contractor.minAmount;
-  const maxCashLimit = exchangeType === 'seller' ? +(contractor.balance.amount * contractor.exchangeRate).toFixed(2) : contractor.balance.amount;
-  const paymentMethodsArray = exchangeType === 'seller' ? contractor.paymentMethods.map((element) => element.provider) : savedUserData.paymentMethods.map((element) => element.provider);
+  const contractorExchangeType = contractor.status;
+  const minCashLimit = contractorExchangeType === 'seller' ? +(contractor.minAmount * contractor.exchangeRate).toFixed(2) : contractor.minAmount;
+  const maxCashLimit = contractorExchangeType === 'seller' ? +(contractor.balance.amount * contractor.exchangeRate).toFixed(2) : contractor.balance.amount;
+  const paymentMethodsArray = contractorExchangeType === 'seller' ? contractor.paymentMethods.map((element) => element.provider) : savedUserData.paymentMethods.map((element) => element.provider);
 
   const contractorRow = `
     <table>
@@ -44,7 +44,7 @@ export const renderContractorTableRow = (contractor) => {
           ${createPaymentMethodsList('users-list__badges-list', paymentMethodsArray)}
         </td>
         <td class="users-list__table-cell users-list__table-btn">
-          <button class="btn btn--greenborder exchange-btn exchange-btn--${exchangeType}" data-exchange-button-id="${contractor.id}" type="button">Обменять</button>
+          <button class="btn btn--greenborder exchange-btn exchange-btn--${contractorExchangeType}" data-exchange-button-id="${contractor.id}" type="button">Обменять</button>
         </td>
       </tr>
     </table>
@@ -114,17 +114,17 @@ getContractorsData().then((contractorsData) => {
     giveButtonsEventListener('sell', (evt) => showModalWindow(sellersList, evt.target, savedUserData));
     currentRenderedList = [...sellersList];
 
-    buyListControlButton.addEventListener('click', () => {
-      removeHtmlClass(sellListControlButton, 'is-active');
-      addHtmlClass(buyListControlButton, 'is-active');
+    buyCryptoListButton.addEventListener('click', () => {
+      removeHtmlClass(sellCryptoListButton, 'is-active');
+      addHtmlClass(buyCryptoListButton, 'is-active');
       currentRenderedList = [...sellersList];
       renderOnlyVerifiedUsers();
       giveButtonsEventListener('sell', (evt) => showModalWindow(currentRenderedList, evt.target, savedUserData));
     });
 
-    sellListControlButton.addEventListener('click', () => {
-      removeHtmlClass(buyListControlButton, 'is-active');
-      addHtmlClass(sellListControlButton, 'is-active');
+    sellCryptoListButton.addEventListener('click', () => {
+      removeHtmlClass(buyCryptoListButton, 'is-active');
+      addHtmlClass(sellCryptoListButton, 'is-active');
       currentRenderedList = [...buyersList];
       renderOnlyVerifiedUsers();
       giveButtonsEventListener('buy', (evt) => showModalWindow(currentRenderedList, evt.target, savedUserData));
@@ -137,7 +137,6 @@ getContractorsData().then((contractorsData) => {
       addHtmlClass(viewContractorsByListButton, 'is-active');
       hideElement(mapContainer);
       contractorsContainer.removeAttribute('style');
-      currentRenderedList = sellListControlButton.classList.contains('is-active') ? [...buyersList] : [...sellersList];
       renderOnlyVerifiedUsers();
     });
 

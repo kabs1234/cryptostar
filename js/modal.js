@@ -186,8 +186,6 @@ const checkPaymentMethod = (element) => element !== 'Выберите платё
 const setModalForm = (modalWindow) => {
   const paymentInput = modalWindow.querySelector('.custom-input__payment');
   const enrollmentInput = modalWindow.querySelector('.custom-input__enrollment');
-  const hiddenReceivingAmountInput = modalWindow.querySelector('.modal-form__receiving-amount');
-  const hiddenSendingAmountInput = modalWindow.querySelector('.modal-form__sending-amount');
   const exchangeAllCurrencyButton = modalWindow.querySelector('.custom-input__btn--exchange-currency');
   const passwordInput = modalWindow.querySelector('.custom-input__password');
   const paymentMethodMenu = modalWindow.querySelector('.select-menu');
@@ -200,21 +198,15 @@ const setModalForm = (modalWindow) => {
     pristineForm.addValidator(enrollmentInput, checkBuyCryptoConverting, 'Введенная криптовалюта должна быть в диапозоне лимита');
 
     paymentInput.addEventListener('input', (evt) => {
-      changeInputValue(enrollmentInput, +convertCurrencyToCrypto(evt.target.value).toFixed(5));
-      changeInputValue(hiddenReceivingAmountInput, convertCurrencyToCrypto(evt.target.value));
-      changeInputValue(hiddenSendingAmountInput, convertCryptoToCurrency(enrollmentInput.value));
+      changeInputValue(enrollmentInput, convertCurrencyToCrypto(evt.target.value));
     });
     enrollmentInput.addEventListener('input', (evt) => {
-      changeInputValue(paymentInput, +convertCryptoToCurrency(evt.target.value).toFixed(5));
-      changeInputValue(hiddenSendingAmountInput, convertCryptoToCurrency(evt.target.value));
-      changeInputValue(hiddenReceivingAmountInput, convertCurrencyToCrypto(paymentInput.value));
+      changeInputValue(paymentInput, convertCryptoToCurrency(evt.target.value));
     });
 
     exchangeAllCurrencyButton.addEventListener('click', () => {
       changeInputValue(paymentInput, user.balances[0].amount);
-      changeInputValue(hiddenSendingAmountInput, user.balances[0].amount);
       changeInputValue(enrollmentInput, exchangeAllCrypto(user, contractor));
-      changeInputValue(hiddenReceivingAmountInput, exchangeAllCrypto(user, contractor));
     });
   } else if (modalWindow === modalSellWindow) {
     const exchangeAllCryptoButton = modalSellWindow.querySelector('.custom-input__btn--exchange-crypto');
@@ -223,28 +215,20 @@ const setModalForm = (modalWindow) => {
     pristineForm.addValidator(enrollmentInput, checkSellCurrencyConverting, 'Введенная сумма должна быть в диапозоне лимита');
 
     paymentInput.addEventListener('input', (evt) => {
-      changeInputValue(enrollmentInput, +convertCryptoToCurrency(evt.target.value).toFixed(5));
-      changeInputValue(hiddenReceivingAmountInput, convertCryptoToCurrency(evt.target.value));
-      changeInputValue(hiddenSendingAmountInput, convertCurrencyToCrypto(enrollmentInput.value));
+      changeInputValue(enrollmentInput, convertCryptoToCurrency(evt.target.value));
     });
     enrollmentInput.addEventListener('input', (evt) => {
-      changeInputValue(paymentInput, +convertCurrencyToCrypto(evt.target.value).toFixed(5));
-      changeInputValue(hiddenSendingAmountInput, convertCurrencyToCrypto(evt.target.value));
-      changeInputValue(hiddenReceivingAmountInput, convertCryptoToCurrency(paymentInput.value));
+      changeInputValue(paymentInput, convertCurrencyToCrypto(evt.target.value));
     });
 
     exchangeAllCryptoButton.addEventListener('click', () => {
       changeInputValue(paymentInput, user.balances[1].amount);
-      changeInputValue(hiddenSendingAmountInput, user.balances[1].amount);
       changeInputValue(enrollmentInput, exchangeAllCrypto(user, contractor));
-      changeInputValue(hiddenReceivingAmountInput, exchangeAllCrypto(user, contractor));
     });
 
     exchangeAllCurrencyButton.addEventListener('click', () => {
       changeInputValue(enrollmentInput, contractor.balance.amount);
-      changeInputValue(hiddenReceivingAmountInput, contractor.balance.amount);
       changeInputValue(paymentInput, exchangeAllCurrency(contractor));
-      changeInputValue(hiddenSendingAmountInput, exchangeAllCurrency(contractor));
     });
   }
 
